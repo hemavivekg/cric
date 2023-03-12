@@ -13,11 +13,12 @@
 <body>
       <script>
             var app = angular.module("myShoppingList", []);
-            app.controller("myCtrl", function ($scope, $http) {
+            app.controller("myCtrl", function ($scope, $http,$window) {
 
                   var objDetail = {};
 
                   $scope.totalOptions = 0;
+                  $scope.innerWidth = $window.innerWidth;
 
                   function GetDataFromServer(pos) {
                         var parm = '';
@@ -320,8 +321,40 @@
                         }
                   }
 
+                  function truncateDecimals(number, digits) {
+                        var multiplier = Math.pow(10, digits),
+                        adjustedNum = number * multiplier,
+                        truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
+
+                        return truncatedNum / multiplier;
+                  };
+
                   $scope.getNumberFormat = function (val) {
                         var x = val;
+                        var cro1 = 10000000;
+                        var cro100 = 1000000000;
+                        var lakh1 = 100000;
+                        var tenk = 10000;
+                        if ($scope.innerWidth < 600)
+                        {
+                              
+                              var returnVal = '';
+                              if (val > cro1)
+                              {
+                              returnVal = (val / cro1).toString().substring(0,4) + ' Cr';
+                              }
+                              else if (val > lakh1)
+                              {
+                              returnVal = (val / lakh1).toString().substring(0,4) + ' L';  
+                              }
+                              else if (val > tenk)
+                              {
+                              returnVal = (val / tenk).toString().substring(0,4) + ' K';  
+                              }
+                              if (returnVal)
+                                    return returnVal.replace(". "," ");
+                        }
+
                         x = x.toString();
                         var lastThree = x.substring(x.length - 3);
                         var otherNumbers = x.substring(0, x.length - 3);
@@ -615,7 +648,7 @@
                   $scope.currentMatch = 0;
             });
       </script>
-      <div ng-app="myShoppingList" ng-controller="myCtrl" class="container" style="margin: 0px 5px 0px 5px;">
+      <div ng-app="myShoppingList" ng-controller="myCtrl" class="container" >
 
             <p class="text-primary" style="
     text-align: center;
@@ -624,7 +657,7 @@
     font-size: 21px;
     font-family: Calibri;
     color: cornflowerblue;
-">Points Table As Of Today </p>
+">IPL 2023 - Point Predictor</p>
 
             <div class="row" style="border-radius: 10px;border: 1px solid #337ab7;padding-top: 10px;padding-bottom: 10px;">
 <span style="
@@ -675,7 +708,7 @@
 ">Points after selected match</span></span>      
 
                   <div ng-repeat="obj in teamsNewPoint" class="innerTeam">
-                        <span class="spanTeamNameHeader">{{obj.name}}</span>
+                        <span class="spanTeamNameHeaderPoints">{{obj.name}}</span>
                         <div style="
     display: inline-block;
     border: 1px solid #337ab7;
@@ -702,17 +735,17 @@
 
             <div class="row">
                   <div class="col-12"><span style="padding-bottom:10px" class="spanTeamNameHeader">Position:</span>
-                        <select ng-model="selectedPos" ng-options="x for x in positionList" ng-change="changeOption()">
-                        </select>&nbsp;&nbsp;&nbsp;
+                        <select class="clsSelectedPos" ng-model="selectedPos" ng-options="x for x in positionList" ng-change="changeOption()">
+                        </select>
                         <span style="padding-bottom:10px" class="spanTeamNameHeader">Teams:</span>
-                        <select ng-model="selectedTeamDropDown" ng-options="x for x in teamNames" ng-change="changeOptionTeam()">
-                        </select>&nbsp;&nbsp;&nbsp;
-                        <span style="padding-bottom:10px" class="spanTeamNameHeader">Point Options:</span>
-                        <select ng-model="selectedPointOption" ng-options="x for x in ['All','Point','Run Rate']" ng-change="changePointOption()">
-                        </select>&nbsp;&nbsp;&nbsp;
+                        <select class="clsSelectedTeamDropDown" ng-model="selectedTeamDropDown" ng-options="x for x in teamNames" ng-change="changeOptionTeam()">
+                        </select>
+                        <span style="padding-bottom:10px" class="spanTeamNameHeader">Show:</span>
+                        <select class="clsSelectedPointOption" ng-model="selectedPointOption" ng-options="x for x in ['All','Point','Run Rate']" ng-change="changePointOption()">
+                        </select>
 
                         <div style="display:inline-block;border: 1px solid grey;padding: 4px 10px 4px 10px;border-radius: 5px;">
-                              <span class="spanTeamNameHeader1">Next Match ({{upcomingMatches[curMatchPos].SlNo}} of 70) :</span>
+                              <span class="spanTeamNameHeader1">Next Match ({{upcomingMatches[curMatchPos].SlNo}}/70) </span>
                               <a ng-click="goToPrevious()">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
                               </a><span class="spanTeamNameHeader1">{{upcomingMatches[curMatchPos].date}}</span>
@@ -734,14 +767,14 @@
 
             <div class="row" ng-if="detailedPos==-1">
                   <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 10px;">
-                        <table class="table table-striped" style="padding-right:10px!important;padding-left:10px!important;">
+                        <table class="table table-striped" style="padding-right:10px!important;padding-left:10px!important;margin-bottom: 0px;">
                               <thead>
                                     <tr>
                                           <th rowspan="2">
                                                 Team & <br> Position
                                           </th>
                                           <th colspan="4" style="text-align:center">
-                                                Possible options Current and After next match
+                                                Possible options Current <a href="#highlight1"><sup>1</sup></a> and After next match <a href="#highlight2"><sup>2</sup></a>
                                           </th>
 
                                     </tr>
@@ -773,21 +806,21 @@
                                           </td>
                                           <td width="28%">
                                                 <a ng-click="selectDetailView(obj.toString(),arr,type.value,1)">
-                                                <div style="display: inline-block;width:70%;text-align:right">{{getNumberFormat(positionObj[curMatch][obj][arr][type.value])}}
+                                                <div class="clsCurMatch">{{getNumberFormat(positionObj[curMatch][obj][arr][type.value])}}
                                                 </div>
-                                                <div style="display: inline-block;width:5%;text-align:center"> - 
+                                                <div class="clsNextMatchHypen"> - 
                                                 </div>      
-                                                <div style="display: inline-block;width:20%;text-align:right">{{getPercentage((positionObj[curMatch][obj][arr][type.value]),1)}}
+                                                <div class="clsCurMatchPer">{{getPercentage((positionObj[curMatch][obj][arr][type.value]),1)}}
                                                 </div>
                                                  </a>
                                           </td>
                                           <td width="30%">
                                                 <a ng-click="selectDetailView(obj.toString(),arr,type.value,2)">
-                                                <div style="display: inline-block;width:68%;text-align:right">{{getNumberFormat(positionObj[curMatch+1][obj][arr][type.value])}}</div>
-                                                <div style="display: inline-block;width:5%;text-align:center"> - 
+                                                <div class="clsNextMatch">{{getNumberFormat(positionObj[curMatch+1][obj][arr][type.value])}}</div>
+                                                <div class="clsNextMatchHypen"> - 
                                                 </div>      
-                                                <div style="display: inline-block;width:18%;text-align:right">{{getPercentage((positionObj[curMatch + 1][obj][arr][type.value]),2)}}</div>
-                                                <div style="display: inline-block;width:5%">
+                                                <div class="clsNextMatchPer">{{getPercentage((positionObj[curMatch + 1][obj][arr][type.value]),2)}}</div>
+                                                <div class="clsNextMatchArr">
                                                 <span ng-class="{'glyphicon glyphicon-arrow-up posArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],1) == '+'}"></span>
                                                 <span ng-class="{'glyphicon glyphicon-arrow-down negArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],1) == '-'}"></span>
                                                 </div>
@@ -795,11 +828,11 @@
                                           </td>
                                           <td width="30%">
                                                 <a ng-click="selectDetailView(obj.toString(),arr,type.value,3)">
-                                                <div style="display: inline-block;width:68%;text-align:right">{{getNumberFormat(positionObj[curMatch+2][obj][arr][type.value])}}</div>
-                                                <div style="display: inline-block;width:5%;text-align:center"> - 
+                                                <div class="clsNextMatch">{{getNumberFormat(positionObj[curMatch+2][obj][arr][type.value])}}</div>
+                                                <div class="clsNextMatchHypen"> - 
                                                 </div>      
-                                                <div style="display: inline-block;width:18%;text-align:right">{{getPercentage((positionObj[curMatch + 2][obj][arr][type.value]),2)}}</div>
-                                                <div style="display: inline-block;width:5%">
+                                                <div class="clsNextMatchPer">{{getPercentage((positionObj[curMatch + 2][obj][arr][type.value]),2)}}</div>
+                                                <div class="clsNextMatchArr">
                                                 <span ng-class="{'glyphicon glyphicon-arrow-up posArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],2) == '+'}"></span>
                                                 <span ng-class="{'glyphicon glyphicon-arrow-down negArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],2) == '-'}"></span>
                                                 </div>
@@ -826,12 +859,13 @@
                   </div>
             </div>
 
-
-
+            <div class="row" ng-if="detailedPos==-1">
+                  <div style="padding-top:10px"> <span ng-if="selectedPointOption == 'All'">* Run Rate<br></span><sup id="highlight1">1</sup> Total Current Possible Options - {{getNumberFormat(totalOptions)}} <br><sup id="highlight2">2</sup> Total Possible Option after next match - {{getNumberFormat(totalOptionsNext)}} </div>
+            </div>      
             <div class="row" ng-if="detailedPos!=-1 && !detailedViewSample">
                   <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 0px;">
-                        Points required details for Team : {{detailedTeam.toString().toUpperCase()}} for position : {{detailedPos}} based on {{detailedType.toString().toUpperCase()}} Remaining matches : {{detailedRemaining}}
-                        <span ng-click="hideDetailView()" class="glyphicon glyphicon-remove-circle" style="float: right;padding-right: 10px;padding-top: 10px;color: red;"></span>
+                        <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">Points required for Team : <b>{{detailedTeam.toString().toUpperCase()}}</b> for position : <b>{{detailedPos}}</b> based on <b>{{(detailedType == 'rr' ? 'Run Rate' : 'Point')}}</b>. Remaining matches : <b>{{detailedRemaining}}</b></span>
+                        <span ng-click="hideDetailView()" class="glyphicon glyphicon-remove-circle clsHideDetailView" ></span>
                         <table class="table table-striped">
                               <thead>
                                     <tr>
@@ -865,29 +899,6 @@
                         <span ng-click="hideDetailViewSample()" class="glyphicon glyphicon-remove-circle" style="float: right;padding-right: 10px;padding-top: 10px;color: red;"></span>
 
 
-<div ng-repeat="obj in teamsObjSampleAry" class="innerTeam">
-                        <span class="spanTeamNameHeader">{{obj}}</span>
-                        <div style="
-    display: inline-block;
-    border: 1px solid #337ab7;
-    border-radius: 5px;
-    padding: 0px 5px 0px 5px;
-    background: linear-gradient(110deg, #d9edf7 50%, #ffed4b8f  50%);
-    width: 70px;
-"><span class="ng-binding" style="
-    display: inline-block;
-    width: 50%;
-    text-align: center;
-">{{teamsObjSample[obj].point}}</span><span class="ng-binding" style="
-    display: inline-block;
-    width: 50%;
-    text-align: center;
-">
-{{teamsObjSample[obj].point + teamsObjSample[obj].won}}
-                       
-                        </span></div>
-                  </div>
-
                         <table class="table  table-striped">
                               <thead>
                                     <tr>
@@ -903,7 +914,7 @@
                               <tbody>
                                     <tr ng-repeat="next in upcomingMatches.slice(curMatchPos + detailedLevel) track by $index">
                                           <th>
-                                                Match : {{next.SlNo + " -  " + next.date }}
+                                                Match : {{next.SlNo + " -  " + next.date + " " + next.team1 + next.team2 }}
                                           </th>
                                           <th>
                                                 {{sampleMatch[$index].toString().toUpperCase()}} <span style="font-size: 12px;font-weight: 100;"> vs {{(next.team1.toString().toLowerCase() == sampleMatch[$index] ? next.team2 : next.team1)}}  </span>
@@ -912,12 +923,31 @@
                               </tbody>
                         </table>
 
+&nbsp;&nbsp;Result: <br>
+<div ng-repeat="obj in teamsObjSampleAry" class="innerTeam">
+                        <span class="spanTeamNameHeader">{{obj}}</span>
+                        <div style="
+    display: inline-block;
+    border: 1px solid #337ab7;
+    border-radius: 5px;
+    padding: 0px 5px 0px 5px;
+    background: linear-gradient(110deg, #d9edf7 100%);
+    width: 30px;
+"><span class="ng-binding" style="
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+">{{teamsObjSample[obj].point + teamsObjSample[obj].won}}
+  </span></div>
+                  </div>
 
 
 
                   </div>
             </div>
 
+<br>
+<br>
 
 </body>
 <style>
@@ -942,14 +972,33 @@
             color: red;
       }
 
+      body .row {
+            margin-left: -10px;
+            margin-right: -10px;
+      }
+
+
+.clsSelectedPointOption {
+padding-left:10px;
+}
+
+.clsSelectedTeamDropDown {
+padding-left:10px;
+}
+
+.clsSelectedPos  {
+padding-left:10px;
+}
+
+
 
       @media (min-width: 0px) and (max-width: 500px) {
             .innerTeam {
                   display: inline-block;
-                  padding: 10px;
+                  padding: 2px;
                   border: 1px solid #d7cdcd;
                   border-radius: 5px;
-                  margin: 5px;
+                  margin-left: 5px;
             }
 
             .spanTeamNameHeader {
@@ -957,15 +1006,57 @@
                   font-weight: 600;
                   color: #286090;
                   padding-right: 5px;
-                  min-width: 30px;
+                  min-width: 40px;
+                  max-width: 40px;
                   display: inline-block
             }
+
+            .spanTeamNameHeaderPoints {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #286090;
+                  padding-right: 5px;
+                  min-width: 35px;
+                  max-width: 35px;
+                  display: inline-block
+            }
+
+            .clsHideDetailView {
+                  float: right;padding-right: 0px;padding-top: 10px;color: red;
+            }
+
+            .clsNextMatch {
+            width:100%;text-align:center;
+            }
+
+            .clsNextMatchHypen {
+            display: none;
+            }
+
+            .clsNextMatchPer {
+            display: inline-block;text-align:right;width: 70%;
+            }
+
+            .clsNextMatchArr {
+            display: inline-block;
+            }
+
+            .clsCurMatch {
+            width:100%;text-align:center;
+            }
+
+            .clsCurMatchPer
+            {
+            display: inline-block;text-align:right
+            }
+
+
       }
 
-      @media (max-width: 5000px) {
+      @media (min-width: 501px) and  (max-width: 5000px) {
             .innerTeam {
                   display: inline-block;
-                  padding: 2px;
+                  padding: 5px;
                   border: 1px solid #d7cdcd;
                   border-radius: 5px;
                   margin: 5px;
@@ -979,6 +1070,63 @@
                   min-width: 45px;
                   display: inline-block
             }
+
+            .spanTeamNameHeaderPoints {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #286090;
+                  padding-right: 5px;
+                  min-width: 40px;
+                  max-width: 40px;
+                  display: inline-block
+            }
+
+
+                        
+            .clsSelectedPointOption {
+            padding-left:5px;
+            }
+
+            .clsSelectedTeamDropDown {
+            padding-left:5px;
+            }
+
+            .clsSelectedPos  {
+            padding-left:5px;
+            }
+
+
+            .clsHideDetailView {
+                  float: right;padding-right: 5px;padding-top: 10px;color: red;
+            }
+
+            
+            .clsNextMatch {
+            display: inline-block;width:68%;text-align:right;
+            }
+
+            .clsNextMatchHypen {
+            display: inline-block;width:5%;text-align:center
+            }
+
+            .clsNextMatchPer {
+            display: inline-block;width:18%;text-align:right;
+            }
+
+            .clsNextMatchArr {
+            display: inline-block;width:5%;
+            }
+
+
+            .clsCurMatch {
+            display: inline-block;width:70%;text-align:right;
+            }
+
+            .clsCurMatchPer
+            {
+            display: inline-block;width:20%;text-align:right
+            }
+
       }
 
       .spanTeamNameHeader1 {
