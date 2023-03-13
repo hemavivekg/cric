@@ -1,1 +1,1174 @@
 
+<!DOCTYPE html>
+<html>
+
+<head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+
+<body>
+      <script>
+            var app = angular.module("myShoppingList", []);
+            app.controller("myCtrl", function ($scope, $http,$window) {
+
+                  var objDetail = {};
+
+                  $scope.totalOptions = 0;
+                  $scope.innerWidth = $window.innerWidth;
+
+                  function GetDataFromServer(pos) {
+                        var parm = '';
+                        console.log(pos + ' - ' + $scope.rootPos);
+                        if (pos) {
+                              //parm = "?pos=" + ((($scope.rootPos + parseInt(pos) + 1) * 3) - 2); 
+                              //logic to get data for win, loss, draw
+                              /*
+                              1	2	5, 6,7	5-14,15,16  6-17,18,19   7-20,21,22					Multiple by 3 and minus 1,0,-1. Example, 1 is root, it is first child (1*3) - 1 = 2, second child = 1*3 -0 = 3, third child : (1*3) - (-1) = 4
+                                    3	8 9 10	8-23,24,25 9-26,27,28 10-29,30,31					
+	                              4	11 12 13	11-32,33,34  12-35,36,37  13-38,39,40					
+					
+                              parm = "?pos=" + ((((parseInt($scope.rootPos) * 3) - 2 + parseInt(pos)) * 3) - 2).toString();
+                              console.log((((parseInt($scope.rootPos) * 3) - 2 + parseInt(pos)) * 3));
+                              */
+
+                              parm = "?pos=" + pos;
+                        }
+                        //alert('http://localhost/ipl/summary_' + pos + '.json');
+                        $http.get('data/summary_' + pos + '.json').
+                        //$http.get('http://localhost:8000/getDataLoad' + parm).
+                              then(function (response) {
+                                    $scope.greeting = response.data;
+                                    console.log('response');
+                                    console.log(response);
+                                    console.log(pos);
+                                    console.log($scope.positionObj);
+                                    console.log($scope.curMatch);
+                                    objDetail = {};
+                                    var firstobj;
+                                    if (pos) {
+
+
+                                          //$scope.rootPos = (parseInt($scope.rootPos) * 3) + parseInt(pos) - 2;   
+                                          //logic to get data for win, loss, draw
+                                          /*
+                                          $scope.rootPos = (((parseInt($scope.rootPos)) * 3) - 2 + parseInt(pos));
+                                          firstobj = JSON.stringify($scope.positionObj[pos]);
+                                          $scope.positionObj = [];
+                                          $scope.positionObj.push(JSON.parse(firstobj));
+                                          console.log('firstobj ' + firstobj)
+                                          */
+                                          $scope.positionObj = [];
+                                    }
+                                    else {
+                                          $scope.rootPos = 1;
+                                          $scope.positionObj = [];
+                                    }
+
+                                    if (!pos)
+                                          pos = 1;
+
+                                    $scope.posAry = [pos, pos * 2, (pos * 2) + 1];
+                                    $scope.totalOptions = 2 ** ($scope.upcomingMatches.length - $scope.curMatchPos);
+                                    $scope.totalOptionsNext = 2 ** ($scope.upcomingMatches.length - $scope.curMatchPos - 1);
+                                    //alert($scope.totalOptions);
+                                    $scope.curMatch = 0;
+                                    for (var x = 0; x < response.data.length; x++) {
+                                          $scope.positionObj.push(JSON.parse(response.data[x].name));
+                                    }
+                                    console.log($scope.positionObj);
+                              });
+                  }
+
+                  $scope.nextLevelCounter = 0;
+
+                  const d = new Date();
+                  let ms = d.getMilliseconds();
+                  $http.get('data/initData.json?q=' + ms.toString()).
+                  //$http.get('http://localhost:8000/getInitData').
+                        then(function (response) {
+                              console.log(response);
+                              //teams = JSON.parse(response.data);
+                              teams = response.data.currentPoints;
+                              $scope.nextLevelCounter = response.data.nextLevelCounter;
+                              //alert($scope.nextLevelCounter);
+                              //teams.sort((a,b) => b.point - a.point);
+                              //teams.sort((a,b) => parseFloat(b.runrate) - parseFloat(a.runrate));           
+                              //teams.sort((a,b) => (b.point - a.point) && (parseFloat(b.runrate) - parseFloat(a.runrate)));
+
+                              teams.sort((a,b) => (b.point == a.point ? parseFloat(b.runrate) - parseFloat(a.runrate) : b.point - a.point));
+                              
+                              //$scope.teams = teams;
+                              initialize();
+                              console.log('222');
+
+                              $scope.rootPos = response.data.rootPos;
+
+                              $scope.upcomingMatches = $scope.upcomingMatches.slice(response.data.removeMatch);
+
+                              GetDataFromServer($scope.rootPos);
+                        });
+
+
+
+
+
+
+                  /*
+                  var teamsx = [
+                        { name: 'GT', desc: 'Gujarat', point: 20, won: 0, lost: 0 },
+                        { name: 'RR', desc: 'Rajasdan Royals', point: 16, won: 0, lost: 0 },
+                        { name: 'LSG', desc: 'Lucknow Super Giants', point: 16, won: 0, lost: 0 },
+                        { name: 'DC', desc: 'Delhi Capitals', point: 14, won: 0, lost: 0 },
+                        { name: 'RCB', desc: 'Royal Challengers', point: 14, won: 0, lost: 0 },
+                        { name: 'KKR', desc: 'Kolkota Knight Riders', point: 12, won: 0, lost: 0 },
+                        { name: 'PBKS', desc: 'Punjab', point: 12, won: 0, lost: 0 },
+                        { name: 'SRH', desc: 'Sun Risers Hydrabad', point: 12, won: 0, lost: 0 },
+                        { name: 'CSK', desc: 'Chennai Super Kings', point: 8, won: 0, lost: 0 },
+                        { name: 'MI', desc: 'Mumbai', point: 6, won: 0, lost: 0 },
+                  ];
+                  */
+
+                  var teams = [
+                        { name: 'GT', desc: 'Gujarat', point: 8, won: 0, lost: 0 },
+                        { name: 'RR', desc: 'Rajasdan Royals', point: 6, won: 0, lost: 0 },
+                        { name: 'LSG', desc: 'Lucknow Super Giants', point: 10, won: 0, lost: 0 },
+                        { name: 'DC', desc: 'Delhi Capitals', point: 6, won: 0, lost: 0 },
+                        { name: 'RCB', desc: 'Royal Challengers', point: 10, won: 0, lost: 0 },
+                        { name: 'KKR', desc: 'Kolkota Knight Riders', point: 8, won: 0, lost: 0 },
+                        { name: 'PBKS', desc: 'Punjab', point: 12, won: 0, lost: 0 },
+                        { name: 'SRH', desc: 'Sun Risers Hydrabad', point: 6, won: 0, lost: 0 },
+                        { name: 'CSK', desc: 'Chennai Super Kings', point: 0, won: 0, lost: 0 },
+                        { name: 'MI', desc: 'Mumbai', point: 10, won: 0, lost: 0 },
+                  ];
+
+                  
+
+
+                  /*
+                  var teamsNew = [
+                        { name: 'gt', desc: 'Gujarat', point: 18, won: 0, lost: 0 },
+                        { name: 'rr', desc: 'Rajasdan Royals', point: 16, won: 0, lost: 0 },
+                        { name: 'lsg', desc: 'Lucknow Super Giants', point: 14, won: 0, lost: 0 },
+                        { name: 'dc', desc: 'Delhi Capitals', point: 12, won: 0, lost: 0 },
+                        { name: 'rcb', desc: 'Royal Challengers', point: 14, won: 0, lost: 0 },
+                        { name: 'kkr', desc: 'Kolkota Knight Riders', point: 10, won: 0, lost: 0 },
+                        { name: 'pbks', desc: 'Punjab', point: 10, won: 0, lost: 0 },
+                        { name: 'srh', desc: 'Sun Risers Hydrabad', point: 10, won: 0, lost: 0 },
+                        { name: 'csk', desc: 'Chennai Super Kings', point: 8, won: 0, lost: 0 },
+                        { name: 'mi', desc: 'Mumbai', point: 4, won: 0, lost: 0 },
+                  
+                  $scope.teamsNew = teamsNew;
+                  */
+
+                  $scope.teams = teams;
+
+                  $scope.detailedTeam = "gt";
+                  $scope.detailedPos = "-1";
+                  $scope.detailedType = "point";
+
+
+
+                  var teamsObj = {
+                        'GT': { point: [], runrate: [] },
+                        'RR': { point: [], runrate: [] },
+                        'LSG': { point: [], runrate: [] },
+                        'DC': { point: [], runrate: [] },
+                        'RCB': { point: [], runrate: [] },
+                        'KKR': { point: [], runrate: [] },
+                        'PBKS': { point: [], runrate: [] },
+                        'SRH': { point: [], runrate: [] },
+                        'CSK': { point: [], runrate: [] },
+                        'MI': { point: [], runrate: [] },
+
+                  };
+
+
+
+                  /*
+                  var teamsObjNew = {
+                        'gt': { point: [], runrate: [] },
+                        'rr': { point: [], runrate: [] },
+                        'lsg': { point: [], runrate: [] },
+                        'dc': { point: [], runrate: [] },
+                        'rcb': { point: [], runrate: [] },
+                        'kkr': { point: [], runrate: [] },
+                        'pbks': { point: [], runrate: [] },
+                        'srh': { point: [], runrate: [] },
+                        'csk': { point: [], runrate: [] },
+                        'mi': { point: [], runrate: [] },
+                  };
+                  */
+
+                  initialize();
+
+                  function initialize() {
+
+                        $scope.teams = teams;
+
+                        for (var i = 0; i < teams.length; i++) {
+                              teamsObj[teams[i].name].currentPoint = teams[i].point;
+                              teamsObj[teams[i].name].point = teams[i].point;
+                              teamsObj[teams[i].name].desc = teams[i].desc;
+                              teamsObj[teams[i].name].won = teams[i].won;
+                              teamsObj[teams[i].name].lost = teams[i].lost;
+                              teamsObj[teams[i].name].runrate = teams[i].runrate;
+                              teamsObj[teams[i].name].pointSeries = [];
+                              teamsObj[teams[i].name].runrateSeries = [];
+                              teamsObj[teams[i].name].played = teams[i].aplayed;
+                              teamsObj[teams[i].name].totallost = teams[i].aplayed;
+                        }
+                        $scope.teamsObj = teamsObj;
+
+                        $scope.teamsObjFuture = JSON.parse(JSON.stringify(teamsObj));
+
+
+                  }
+                  var flowIndex = 0;
+                  var matchIndex = 0;
+                  var objResult = [];
+                  objResult[0] = {};
+                  var globalNu = 0;
+
+                  var posPoint = 3;
+
+
+                  //recurMatch(0, 0, '');
+
+                  //$scope.teamsObjNew = teamsObjNew;
+
+                  $scope.teamNames = Object.keys(teamsObj);
+                  $scope.teamNamesNew = Object.keys(teamsObj).map(e => e.toString().toLowerCase());
+                  //$scope.teamNamesNew = Object.keys(teamsObjNew);
+                  $scope.teamNames.unshift('All');
+                  //console.log('$scope.teamNamesNew');
+
+                  //console.log($scope.teamNames);
+                  //console.log($scope.teamNamesNew);
+
+                  var teams1;
+
+
+                  $scope.getKeys = function (mat) {
+                        var arr = [];
+                        var keysArr = Object.keys(mat)
+                        for (var x = 0; x < keysArr.length; x++) {
+                              if (!teamsObj[keysArr[x]]) {
+                                    arr.push(keysArr[x]);
+                              }
+                        }
+                        return arr;
+                  }
+
+                  $scope.showTeamSummaryPoint = function (name, obj, isRunRate) {
+
+                        $scope.showDetail = true;
+
+                        $scope.currentTeamObj = JSON.parse(JSON.stringify(obj));
+                        if (isRunRate) {
+                              $scope.currentTeamObj.point = obj.runrate;
+                        }
+                        $scope.selectedTeam = name;
+                        teams1 = teams1.sort((a, b) => b.point - a.point);
+                  }
+
+                  $scope.selectedTeamDropDown = "All";      
+                  $scope.calculatePoints = function (obj) {
+                        if (obj.showPointSummary) {
+                              obj.showPointSummary = false;
+                        }
+                        else {
+                              obj.showPointSummary = true;
+                              if (!obj.resultPointSummary) {
+                                    var teams1 = JSON.parse(JSON.stringify(teams));
+                                    for (var j = 0; j < teams1.length; j++) {
+                                          if (parseInt(obj.points[teams1[j].name]) > 0)
+                                                teams1[j].point = teams1[j].point + parseInt(obj.points[teams1[j].name]);
+                                    }
+                                    //$scope.showPointSummary = true;
+                                    obj.resultPointSummary = teams1;
+                              }
+
+
+                        }
+                  }
+
+                  $scope.getPercentage = function (val, level) {
+                        if (level == 1)
+                            return parseFloat((val / $scope.totalOptions) * 100).toFixed(2) + '%';
+                        else
+                            return parseFloat((val / $scope.totalOptionsNext) * 100).toFixed(2) + '%';
+
+                  }
+
+
+
+                  $scope.showArrow = function (val,val1,val2, level) {
+                        if (level == 1)
+                        {
+                           if (parseFloat((val1 / $scope.totalOptions) * 100) > parseFloat((val2 / $scope.totalOptions) * 100))
+                              return "+";
+                           else if (parseFloat((val1 / $scope.totalOptions) * 100) < parseFloat((val2 / $scope.totalOptions) * 100))
+                              return "-";
+
+                        }
+                        else if (level == 2)
+                        {
+                           if (parseFloat((val1 / $scope.totalOptions) * 100) > parseFloat((val2 / $scope.totalOptions) * 100))
+                              return "-";
+                           else if (parseFloat((val1 / $scope.totalOptions) * 100) < parseFloat((val2 / $scope.totalOptions) * 100))
+                              return "+";
+                        }
+                  }
+
+                  function truncateDecimals(number, digits) {
+                        var multiplier = Math.pow(10, digits),
+                        adjustedNum = number * multiplier,
+                        truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
+
+                        return truncatedNum / multiplier;
+                  };
+
+                  $scope.getNumberFormat = function (val) {
+                        var x = val;
+                        var cro1 = 10000000;
+                        var cro100 = 1000000000;
+                        var lakh1 = 100000;
+                        var tenk = 10000;
+                        if ($scope.innerWidth < 600)
+                        {
+                              
+                              var returnVal = '';
+                              if (val > cro1)
+                              {
+                              returnVal = (val / cro1).toString().substring(0,4) + ' Cr';
+                              }
+                              else if (val > lakh1)
+                              {
+                              returnVal = (val / lakh1).toString().substring(0,4) + ' L';  
+                              }
+                              else if (val > tenk)
+                              {
+                              returnVal = (val / tenk).toString().substring(0,4) + ' K';  
+                              }
+                              if (returnVal)
+                                    return returnVal.replace(". "," ");
+                        }
+
+                        x = x.toString();
+                        var lastThree = x.substring(x.length - 3);
+                        var otherNumbers = x.substring(0, x.length - 3);
+                        if (otherNumbers != '')
+                              lastThree = ',' + lastThree;
+                        return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+                  }
+
+                  $scope.matchSelected = false;
+                  $scope.selectResult = function (result) {
+                        console.log('comers here ');
+                        $scope.matchSelected = true;
+                        $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].lost = 0;
+                        $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].lost = 0;
+
+                        //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].lost = 0;
+                        //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team2)[0].lost = 0;
+
+                        if (result == 1) {
+                              //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].lost =  2;
+                              $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].lost = 2;
+                              //$scope.upcomingMatches[$scope.curMatchPos]
+                        }
+                        else if (result == 2) {
+                              //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team2)[0].lost =  2;
+                              $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].lost = 2;
+                        }
+                        else {
+                              $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].lost = 1;
+                              $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].lost = 1;
+
+                              //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].lost = 1;
+                              //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team2)[0].lost = 1;
+
+                        }
+
+                        //$scope.teamsObj.map(e => e.newpoint = e.won + e.lost + e.point);
+                        var keys = Object.keys($scope.teamsObj);
+                        $scope.teamsNewPoint = keys.map(e => ({name: e, point:$scope.teamsObj[e].won + $scope.teamsObj[e].lost + $scope.teamsObj[e].point, runrate: $scope.teamsObj[e].runrate}));
+                        $scope.teamsNewPoint.sort((a,b) => (b.point == a.point ? parseFloat(b.runrate) - parseFloat(a.runrate) : b.point - a.point));
+
+                        //$scope.curMatch = result;        
+                  }
+
+                  /*
+                  $scope.getLossCount = function (opt) {
+                        var ar = Object.keys(opt.matches);
+                        var resultCount = 0;
+                        for (var i = 0; i < ar.length; i++) {
+                              if ($scope.matchesObj[ar[i]][opt.matches[ar[i]]] == $scope.selectedTeam)
+                                    resultCount = resultCount + 1;
+                        }
+                        return resultCount;
+                  }
+                  */
+
+                  $scope.positionList = ["All","1", "1 - 2", "1 - 4", "2", "3", "3 - 4", "4", "5", "6", "7", "8", "9", "10", "Top 2", "Top 4"];
+                  $scope.selectedPos = "1";
+                  
+                  $scope.pointOptions = [{name: 'Point', value:'point'},{name: 'Run Rate', value:'rr'}];
+
+                  $scope.changeOption = function () {
+                        //alert($scope.selectedPos);
+                        if ($scope.selectedPos == "All")
+                              $scope.positionVisible = [1,2,3,4,5,6,7,8,9,10];
+                        else
+                              $scope.positionVisible = $scope.selectedPos.toString().split(" - ");
+
+                  }
+
+                  $scope.selectedPointOption = "All";
+
+                  $scope.changePointOption = function () {
+                        //alert($scope.selectedPointOption);
+                        
+                        if ($scope.selectedPointOption == "All")
+                              $scope.pointOptions = [{name: 'Point', value:'point'},{name: 'Run Rate', value:'rr'}];
+                        else if ($scope.selectedPointOption == "Point")
+                             $scope.pointOptions = [{name: 'Point', value:'point'}];
+                        else if ($scope.selectedPointOption == "Run Rate")
+                             $scope.pointOptions = [{name: 'Run Rate', value:'rr'}];
+
+                  }
+
+                  $scope.changeOptionTeam = function () {
+                        if ($scope.selectedTeamDropDown == 'All')
+                             $scope.teamNamesNew = $scope.teamNames.filter(e => e != 'All').map(e => e.toString().toLowerCase()); 
+                        else
+                            $scope.teamNamesNew = $scope.teamNames.filter(e => e == $scope.selectedTeamDropDown.toUpperCase()).map(e => e.toString().toLowerCase());   
+                        //$scope.selectedTeamDropDown = $scope.selectedPos.toString().split(" - ");
+                  }
+
+                  $scope.upcomingMatches = [
+                        { date: "Feb-14 7.30 A.M", team1: "GT", team2: "RR" },
+                        { date: "Feb-15 7.30 A.M", team1: "GT", team2: "LSG" },
+                        { date: "Feb-16 7.30 A.M", team1: "GT", team2: "DC" },
+                        { date: "Feb-17 7.30 A.M", team1: "RR", team2: "LSG" },
+                        { date: "Feb-18 7.30 A.M", team1: "RR", team2: "DC" },
+                        { date: "Feb-20 7.30 A.M", team1: "LSG", team2: "DC" }
+                  ];
+
+                  $scope.upcomingMatches = [
+                        { date: '26-Apr 19:30', team1: 'RCB', team2: 'KKR', result: '',SlNo: '36' },
+                        { date: '27-Apr 19:30', team1: 'RR', team2: 'CSK', result: '',SlNo: '37' },
+                        { date: '28-Apr 19:30', team1: 'PBKS', team2: 'LSG', result: '',SlNo: '38' },
+                        { date: '29-Apr 15:30', team1: 'KKR', team2: 'GT', result: '',SlNo: '39' },
+                        { date: '29-Apr 19:30', team1: 'DC', team2: 'SRH', result: '',SlNo: '40' },
+                        { date: '30-Apr 15:30', team1: 'CSK', team2: 'PBKS', result: '',SlNo: '41' },
+                        { date: '30-Apr 19:30', team1: 'MI', team2: 'RR', result: '',SlNo: '42' },
+                        { date: '1-May 19:30', team1: 'LSG', team2: 'RCB', result: '',SlNo: '43' },
+                        { date: '2-May 19:30', team1: 'GT', team2: 'DC', result: '',SlNo: '44' },
+                        { date: '3-May 19:30', team1: 'PBKS', team2: 'MI', result: '',SlNo: '45' },
+                        { date: '4-May 15:30', team1: 'LSG', team2: 'CSK', result: '',SlNo: '46' },
+                        { date: '4-May 19:30', team1: 'SRH', team2: 'KKR', result: '',SlNo: '47' },
+                        { date: '5-May 19:30', team1: 'RR', team2: 'GT', result: '',SlNo: '48' },
+                        { date: '6-May 15:30', team1: 'CSK', team2: 'MI', result: '',SlNo: '49' },
+                        { date: '6-May 19:30', team1: 'DC', team2: 'RCB', result: '',SlNo: '50' },
+                        { date: '7-May 15:30', team1: 'GT', team2: 'LSG', result: '',SlNo: '51' },
+                        { date: '7-May 19:30', team1: 'RR', team2: 'SRH', result: '',SlNo: '52' },
+                        { date: '8-May 19:30', team1: 'KKR', team2: 'PBKS', result: '',SlNo: '53' },
+                        { date: '9-May 19:30', team1: 'MI', team2: 'RCB', result: '',SlNo: '54' },
+                        { date: '10-May 19:30', team1: 'CSK', team2: 'DC', result: '',SlNo: '55' },
+                        { date: '11-May 19:30', team1: 'KKR', team2: 'RR', result: '',SlNo: '56' },
+                        { date: '12-May 19:30', team1: 'MI', team2: 'GT', result: '',SlNo: '57' },
+                        { date: '13-May 15:30', team1: 'SRH', team2: 'LSG', result: '',SlNo: '58' },
+                        { date: '13-May 19:30', team1: 'DC', team2: 'PBKS', result: '',SlNo: '59' },
+                        { date: '14-May 15:30', team1: 'RR', team2: 'RCB', result: '',SlNo: '60' },
+                        { date: '14-May 19:30', team1: 'CSK', team2: 'KKR', result: '',SlNo: '61' },
+                        { date: '15-May 19:30', team1: 'GT', team2: 'SRH', result: '',SlNo: '62' },
+                        { date: '16-May 19:30', team1: 'LSG', team2: 'MI', result: '',SlNo: '63' },
+                        { date: '17-May 19:30', team1: 'PBKS', team2: 'DC', result: '',SlNo: '64' },
+                        { date: '18-May 19:30', team1: 'SRH', team2: 'RCB', result: '',SlNo: '65' },
+                        { date: '19-May 19:30', team1: 'PBKS', team2: 'RR', result: '',SlNo: '66' },
+                        { date: '20-May 15:30', team1: 'DC', team2: 'CSK', result: '',SlNo: '67' },
+                        { date: '20-May 19:30', team1: 'KKR', team2: 'LSG', result: '',SlNo: '68' },
+                        { date: '21-May 15:30', team1: 'MI', team2: 'SRH', result: '',SlNo: '69' },
+                        { date: '21-May 19:30', team1: 'RCB', team2: 'GT', result: '',SlNo: '70' }
+                        ];
+
+                  $scope.curMatchPos = 0;
+                  //$scope.curMatch = $scope.curMatchPos;
+
+                  $scope.goToPrevious = function () {
+                        if ($scope.curMatch > $scope.curMatchPos)
+                              $scope.curMatch = $scope.curMatch - 1;
+                  };
+
+
+                  $scope.goToNext = function () {
+                        if ($scope.curMatchPos < $scope.nextLevelCounter - 1) {
+                        //if ($scope.curMatchPos < $scope.upcomingMatches.length - 1) {
+                              if ($scope.selectedOption == 1) {
+                                    $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won + 2;
+                                    //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].won = $scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].won + 2;
+                                    //$scope.upcomingMatches[$scope.curMatchPos]
+                              }
+                              else if ($scope.selectedOption == 2) {
+                                    $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].won + 2;
+                              }
+                              else {
+                                    $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won + 1;
+                                    $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].won + 1;
+
+                                    //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].won = $scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].won + 1;
+                                    //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team2)[0].won = $scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team2)[0].won + 1;
+
+                              }
+                              $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].lost = 0;
+                              $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].lost = 0;
+
+                              //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].lost = 0;
+                              //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team2)[0].lost = 0;
+
+
+
+
+                              $scope.curMatchPos = $scope.curMatchPos + 1;
+                              GetDataFromServer($scope.posAry[$scope.selectedOption]);
+                              $scope.selectedOption = null;
+                              $scope.matchSelected = false;
+
+                        }
+
+                  };
+
+                  $scope.detPosAry = [];
+
+                  $scope.hideDetailView = function () {
+                        $scope.detailedPos = -1;
+
+                  }
+                  $scope.detailedLevel = 0;
+                  $scope.selectDetailView = function (team, pos, type, level) {
+                        if (level > 1)
+                              $scope.detailedLevel = 1;
+                        else
+                               $scope.detailedLevel = 0;       
+                        if (objDetail[$scope.posAry[level - 1]]) {
+                              $scope.currentMatchDetail = objDetail[$scope.posAry[level - 1]];
+
+                              refreshCurrentMatch(team, pos, type);
+                        }
+                        else {
+                              $http.get('data/detailed_' + $scope.posAry[level - 1] + '.json').
+                              //$http.get('http://localhost:8000/getDataDetailView?' + 'pos=' + $scope.posAry[level - 1]).
+                                    then(function (response) {
+                                          //alert('hi');
+                                          objDetail[$scope.posAry[level - 1]] = JSON.parse(response.data[0].name);
+                                          $scope.currentMatchDetail = JSON.parse(response.data[0].name);
+                                          refreshCurrentMatch(team, pos, type);
+                                    });
+
+                        }
+
+                        /*            
+                        $scope.detailedTeam = team;
+                        $scope.detailedPos = pos;
+                        $scope.detailedType = type;
+                        $scope.detPosAry = [];
+                        $scope.detPosAry = Object.keys($scope.currentMatchDetail[team][pos][type]);
+                        $scope.detPosAry.sort((a, b) => a - b);
+                        */
+                        //console.log(detPosAry);
+                  }
+
+                  function refreshCurrentMatch(team, pos, type) {
+
+
+                        $scope.detailedTeam = team;
+                        $scope.detailedPos = pos;
+                        $scope.detailedType = type;
+                        $scope.detailedPlayed = $scope.teamsObj[team.toUpperCase()].played;
+                        var startFromMatch = parseInt($scope.upcomingMatches[0].SlNo) + parseInt($scope.curMatchPos)  + parseInt($scope.detailedLevel);
+                        //alert(startFromMatch);
+                        $scope.detailedRemaining = $scope.upcomingMatches.filter(e => e.SlNo >= startFromMatch && (e.team1 == team.toUpperCase() || e.team2 == team.toUpperCase())).length;
+                        $scope.detPosAry = [];
+                        $scope.detPosAry = Object.keys($scope.currentMatchDetail[team][pos][type]);
+                        $scope.detPosAry.sort((a, b) => a - b);
+                        //console.log(detPosAry);
+                  }
+
+
+                  $scope.sampleCount = 0;
+                  $scope.selectDetailViewSample = function (pos,count) {
+                        if (count == -1 || count > $scope.sampleCount)
+                              return;
+                        var sampleMatch;
+                        if (!count)
+                        {
+                              $scope.detPosPoint = pos;
+                             //console.log($scope.currentMatchDetail[$scope.detailedTeam][$scope.detailedPos][$scope.detailedType][pos]);
+                             sampleMatch = $scope.currentMatchDetail[$scope.detailedTeam][$scope.detailedPos][$scope.detailedType][pos].Match[0];
+                             $scope.sampleCount = $scope.currentMatchDetail[$scope.detailedTeam][$scope.detailedPos][$scope.detailedType][pos].Match.length;
+                             $scope.samplePosition = 1;
+                        }
+                        else
+                        {
+                              sampleMatch = $scope.currentMatchDetail[$scope.detailedTeam][$scope.detailedPos][$scope.detailedType][pos].Match[count-1];
+                              $scope.samplePosition = count;
+                        }
+
+                        $scope.detailedViewSample = true;
+                        $scope.sampleMatch = sampleMatch.substring(1).split(',');
+
+                        $scope.teamsObjSample = JSON.parse(JSON.stringify($scope.teamsObj));
+                        var obkeys = Object.keys($scope.teamsObjSample) 
+                        for (var key1 = 0; key1 < obkeys.length; key1++ )
+                        {
+                              var key = obkeys[key1];
+                              $scope.teamsObjSample[key].point = $scope.teamsObjSample[key].point + $scope.teamsObjSample[key].won;
+                              $scope.teamsObjSample[key].won = 0;
+                              $scope.teamsObjSample[key].lost = $scope.teamsObjSample[key].point;
+                        }
+
+                        for (var i = 0; i < $scope.sampleMatch.length; i++)
+                        {
+                              var tName = $scope.sampleMatch[i].toString().toUpperCase();
+                             $scope.teamsObjSample[tName].won = $scope.teamsObjSample[tName].won + 2;
+                             $scope.teamsObjSample[tName].lost = $scope.teamsObjSample[tName].lost + 2;
+                        }
+
+                        console.log($scope.teamsObjSample);
+                        
+                        $scope.teamsObjSampleAry = Object.keys($scope.teamsObjSample);
+                        //$scope.sampleMatch.reverse();
+
+                        $scope.teamsObjSampleAry.sort((a,b) => $scope.teamsObjSample[b].lost - $scope.teamsObjSample[a].lost);
+
+                  }
+
+                  $scope.hideDetailViewSample = function () {
+                        $scope.detailedViewSample = false;
+
+                  }
+
+                  $scope.positionObj = [
+                        { "gt": { "0": 0, "1": { "point": 1, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 2, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 3, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 4, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 5, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 6, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 7, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 8, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } },
+                        { "gt": { "0": 0, "1": { "point": 9, "rr": 277228732 }, "2": { "point": 116207767, "rr": 636419637 }, "3": { "point": 79534316, "rr": 830949645 }, "4": { "point": 51362217, "rr": 984657913 }, "5": { "point": 47302318, "rr": 994987277 }, "6": { "point": 41034023, "rr": 998073226 }, "7": { "point": 44316881, "rr": 952241714 }, "8": { "point": 58232952, "rr": 811371818 }, "9": { "point": 85042065, "rr": 645891286 }, "10": { "point": 193948029, "rr": 305388733 } }, "dc": { "0": 0, "1": { "point": 619696393, "rr": 483309677 }, "2": { "point": 170667045, "rr": 905227613 }, "3": { "point": 82501924, "rr": 939212785 }, "4": { "point": 45966822, "rr": 938569495 }, "5": { "point": 34972731, "rr": 839501650 }, "6": { "point": 29990853, "rr": 748822184 }, "7": { "point": 26879197, "rr": 661387063 }, "8": { "point": 35043255, "rr": 501914391 }, "9": { "point": 42481047, "rr": 366251246 }, "10": { "point": 85896630, "rr": 160711377 } }, "mi": { "0": 0, "1": { "point": 638427785, "rr": 478770196 }, "2": { "point": 164032233, "rr": 892556089 }, "3": { "point": 81928241, "rr": 926902090 }, "4": { "point": 46929517, "rr": 932095332 }, "5": { "point": 36064189, "rr": 838424218 }, "6": { "point": 31212984, "rr": 749425889 }, "7": { "point": 28158761, "rr": 662418770 }, "8": { "point": 36375402, "rr": 502365243 }, "9": { "point": 46013305, "rr": 360234105 }, "10": { "point": 77409675, "rr": 154184248 } }, "csk": { "0": 0, "1": { "point": 200375191, "rr": 290601638 }, "2": { "point": 103565019, "rr": 643922180 }, "3": { "point": 72144204, "rr": 822414687 }, "4": { "point": 47990284, "rr": 978203153 }, "5": { "point": 46430629, "rr": 994877331 }, "6": { "point": 42029803, "rr": 1006495618 }, "7": { "point": 48331106, "rr": 964789248 }, "8": { "point": 62089884, "rr": 822081585 }, "9": { "point": 88323599, "rr": 641066579 }, "10": { "point": 171390339, "rr": 296501623 } }, "rcb": { "0": 0, "1": { "point": 10069255, "rr": 71910224 }, "2": { "point": 29066349, "rr": 244534891 }, "3": { "point": 40116539, "rr": 449470517 }, "4": { "point": 34363088, "rr": 707931351 }, "5": { "point": 45660444, "rr": 866283244 }, "6": { "point": 43619660, "rr": 1031419813 }, "7": { "point": 56887695, "rr": 1122833130 }, "8": { "point": 81842301, "rr": 1117611775 }, "9": { "point": 147692180, "rr": 1034681211 }, "10": { "point": 474413964, "rr": 550400365 } }, "kkr": { "0": 0, "1": { "point": 176097190, "rr": 283255739 }, "2": { "point": 120601130, "rr": 647704353 }, "3": { "point": 78121740, "rr": 832864432 }, "4": { "point": 46978997, "rr": 982391701 }, "5": { "point": 44419332, "rr": 989455750 }, "6": { "point": 39230870, "rr": 999336803 }, "7": { "point": 45160757, "rr": 963232403 }, "8": { "point": 63172348, "rr": 827831870 }, "9": { "point": 94223597, "rr": 652300616 }, "10": { "point": 168285507, "rr": 300650267 } }, "rr": { "0": 0, "1": { "point": 171364477, "rr": 277006664 }, "2": { "point": 118622630, "rr": 637024741 }, "3": { "point": 77548895, "rr": 830533961 }, "4": { "point": 51378616, "rr": 985010151 }, "5": { "point": 47818974, "rr": 995647994 }, "6": { "point": 41034563, "rr": 998054606 }, "7": { "point": 44073343, "rr": 951576565 }, "8": { "point": 57772140, "rr": 810711889 }, "9": { "point": 86477748, "rr": 646308475 }, "10": { "point": 193157052, "rr": 305494104 } }, "pbks": { "0": 0, "1": { "point": 11180809, "rr": 79281536 }, "2": { "point": 28962901, "rr": 254181341 }, "3": { "point": 36023177, "rr": 452566677 }, "4": { "point": 30991250, "rr": 707486897 }, "5": { "point": 43193955, "rr": 870096973 }, "6": { "point": 43396118, "rr": 1038972751 }, "7": { "point": 57987823, "rr": 1137857176 }, "8": { "point": 83842684, "rr": 1131698287 }, "9": { "point": 148597631, "rr": 1043432702 }, "10": { "point": 460461903, "rr": 552676623 } }, "lsg": { "0": 0, "1": { "point": 160015553, "rr": 271907305 }, "2": { "point": 134444507, "rr": 642016889 }, "3": { "point": 83361164, "rr": 835737522 }, "4": { "point": 47689333, "rr": 981072058 }, "5": { "point": 43921117, "rr": 984257402 }, "6": { "point": 38763533, "rr": 992225714 }, "7": { "point": 44385552, "rr": 956916451 }, "8": { "point": 62214496, "rr": 822696634 }, "9": { "point": 94165135, "rr": 653400803 }, "10": { "point": 176501655, "rr": 303050529 } }, "srh": { "0": 0, "1": { "point": 187556157, "rr": 287930313 }, "2": { "point": 103284663, "rr": 642644567 }, "3": { "point": 74550466, "rr": 829135016 }, "4": { "point": 50434360, "rr": 985572277 }, "5": { "point": 47489174, "rr": 999988189 }, "6": { "point": 41843644, "rr": 1005145515 }, "7": { "point": 45313401, "rr": 958749324 }, "8": { "point": 58875461, "rr": 815578271 }, "9": { "point": 84070230, "rr": 644637308 }, "10": { "point": 186830415, "rr": 303560887 } } }
+                  ];
+                  $scope.positionVisible = [1, 2];
+                  $scope.currentMatch = 0;
+            });
+      </script>
+      <div ng-app="myShoppingList" ng-controller="myCtrl" class="container" >
+
+            <p class="text-primary" style="
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    font-size: 21px;
+    font-family: Calibri;
+    color: cornflowerblue;
+">IPL 2023 - Point Predictor</p>
+
+            <div class="row" style="border-radius: 10px;border: 1px solid #337ab7;padding-top: 10px;padding-bottom: 10px;">
+<span style="
+    /* background-color: white; */
+    margin: -20px 0px 0px 10px;
+    display: block;
+"><span style="padding:0px 5px 0px 5px;
+    background-color: white;
+">Points as of today</span></span>                  <div ng-repeat="obj in teams" class="innerTeam">
+                        <span class="spanTeamNameHeader">{{obj.name}}</span>
+                        <div style="
+    display: inline-block;
+    border: 1px solid #337ab7;
+    border-radius: 5px;
+    padding: 0px 4px 0px 4px;
+    background: linear-gradient(110deg, #d9edf7 40%, #ffed4b8f  30%);
+    width: 70px;">
+    
+    <span class="ng-binding" style="
+    display: inline-block;
+    width: 25%;
+    text-align: center;
+">{{obj.point}}</span><span class="ng-binding" style="
+    display: inline-block;
+    width: 75%;font-size:12px;
+    text-align: right;
+">{{obj.runrate}}
+<!--
+{{teamsObj[obj.name].point + teamsObj[obj.name].won + teamsObj[obj.name].lost}}
+    -->                   
+                        </span></div>
+                  </div>
+                  <div style="display:inline-block;padding-left:10px;font-size:10px">
+                        <span class="glyphicon glyphicon-unchecked" style="border: 1px solid #337ab7;color:#d9edf7;background-color:#d9edf7;border-radius:3px"></span>&nbsp;
+                        Current Points &nbsp;&nbsp;
+                        <span class="glyphicon glyphicon-unchecked" style="border: 1px solid #337ab7;color:#ffed4b8f;background-color:#ffed4b8f;border-radius:3px"></span>&nbsp;Run Rate
+                  </div>
+            </div>
+            <br>
+            <div class="row" ng-if="teamsNewPoint" style="border-radius: 10px;border: 1px solid #337ab7;padding-top: 10px;padding-bottom: 10px;margin-bottom: 10px;">
+
+<span style="
+    /* background-color: white; */
+    margin: -20px 0px 0px 10px;
+    display: block;
+"><span style="padding:0px 5px 0px 5px;
+    background-color: white;
+">Points after selected match</span></span>      
+
+                  <div ng-repeat="obj in teamsNewPoint" class="innerTeam">
+                        <span class="spanTeamNameHeaderPoints">{{obj.name}}</span>
+                        <div style="
+    display: inline-block;
+    border: 1px solid #337ab7;
+    border-radius: 5px;
+    padding: 0px 4px 0px 4px;
+    text-align: center;
+    background: linear-gradient(110deg, #d9edf7 100%, #ffed4b8f  30%);
+    width: 40px;"><span class="ng-binding" style="
+    display: inline-block;
+    text-align: center;
+">{{obj.point}}</span>
+<!--
+<span class="ng-binding" style="
+    display: inline-block;
+    width: 75%;font-size:12px;
+    text-align: right;
+">{{obj.runrate}}
+
+                        </span>-->
+ </div>
+                  </div>
+            </div>
+
+
+            <div class="row">
+                  <div class="col-12"><span style="padding-bottom:10px" class="spanTeamNameHeader">Position:</span>
+                        <select class="clsSelectedPos" ng-model="selectedPos" ng-options="x for x in positionList" ng-change="changeOption()">
+                        </select>
+                        <span style="padding-bottom:10px" class="spanTeamNameHeader">Teams:</span>
+                        <select class="clsSelectedTeamDropDown" ng-model="selectedTeamDropDown" ng-options="x for x in teamNames" ng-change="changeOptionTeam()">
+                        </select>
+                        <span style="padding-bottom:10px" class="spanTeamNameHeader">Show:</span>
+                        <select class="clsSelectedPointOption" ng-model="selectedPointOption" ng-options="x for x in ['All','Point','Run Rate']" ng-change="changePointOption()">
+                        </select>
+
+                        <div style="display:inline-block;border: 1px solid grey;padding: 4px 10px 4px 10px;border-radius: 5px;">
+                              <span class="spanTeamNameHeader1">Next Match ({{upcomingMatches[curMatchPos].SlNo}}/70) </span>
+                              <a ng-click="goToPrevious()">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                              </a><span class="spanTeamNameHeader1">{{upcomingMatches[curMatchPos].date}}</span>
+                              <input class="spanTeamNameHeader1" ng-change="selectResult(1)" type="radio" ng-model="selectedOption" ng-value="1">                              <span class="spanTeamNameHeader1"> {{upcomingMatches[curMatchPos].team1}}</span>
+                              <input ng-change="selectResult(2)" type="radio" ng-model="selectedOption" ng-value="2">
+                              <span
+                                    class="spanTeamNameHeader1"> {{upcomingMatches[curMatchPos].team2}}</span>
+                                    <!--<input ng-change="selectResult(3)" type="radio" ng-model="selectedOption" ng-value="3"> NA
+                              -->
+
+                                    <a ng-click="goToNext()" ng-class="matchSelected && curMatchPos < (nextLevelCounter - 1) ? '' : 'isDisabled'">
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </a>
+                        </div>
+
+                  </div>
+            </div>
+            <br>
+
+            <div class="row" ng-if="detailedPos==-1">
+                  <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 10px;">
+                        <table class="table table-striped" style="padding-right:10px!important;padding-left:10px!important;margin-bottom: 0px;">
+                              <thead>
+                                    <tr>
+                                          <th rowspan="2">
+                                                Team & <br> Position
+                                          </th>
+                                          <th colspan="4" style="text-align:center">
+                                                Possible options Current <a href="#highlight1"><sup>1</sup></a> and After next match <a href="#highlight2"><sup>2</sup></a>
+                                          </th>
+
+                                    </tr>
+                                    <tr>
+                                          <th style="text-align: center">
+                                                Current
+                                          </th>
+                                          <th style="text-align: center">
+                                                if {{upcomingMatches[curMatchPos].team1}} wins
+                                          </th>
+                                          <th style="text-align: center">
+                                                if {{upcomingMatches[curMatchPos].team2}} wins
+                                          </th>
+                                          <!--Uncomment for Draw
+                                          <th>
+                                                Draw
+                                          </th>-->
+
+                                    </tr>
+                              </thead>
+                              <tbody>
+                                    <tr ng-repeat-start="obj in teamNamesNew">
+                                    </tr>
+                                    <tr ng-repeat-start="arr in positionVisible">
+                                    </tr>
+                                    <tr ng-repeat="type in pointOptions">
+                                          <td width="12%">
+                                                {{obj.toString().toUpperCase()}} <span ng-if="innerWidth > 500">- </span>{{arr}} {{(type.name == "Run Rate" && selectedPointOption == "All" ? "*" : "") }}
+                                          </td>
+                                          <td width="28%">
+                                                <a ng-click="selectDetailView(obj.toString(),arr,type.value,1)">
+                                                <div class="clsCurMatch">{{getNumberFormat(positionObj[curMatch][obj][arr][type.value])}}
+                                                </div>
+                                                <div class="clsNextMatchHypen"> - 
+                                                </div>      
+                                                <div class="clsCurMatchPer">{{getPercentage((positionObj[curMatch][obj][arr][type.value]),1)}}
+                                                </div>
+                                                 </a>
+                                          </td>
+                                          <td width="30%">
+                                                <a ng-click="selectDetailView(obj.toString(),arr,type.value,2)">
+                                                <div class="clsNextMatch">{{getNumberFormat(positionObj[curMatch+1][obj][arr][type.value])}}</div>
+                                                <div class="clsNextMatchHypen"> - 
+                                                </div>      
+                                                <div class="clsNextMatchPer">{{getPercentage((positionObj[curMatch + 1][obj][arr][type.value]),2)}}</div>
+                                                <div class="clsNextMatchArr">
+                                                <span ng-class="{'glyphicon glyphicon-arrow-up posArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],1) == '+'}"></span>
+                                                <span ng-class="{'glyphicon glyphicon-arrow-down negArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],1) == '-'}"></span>
+                                                </div>
+                                                 </a>
+                                          </td>
+                                          <td width="30%">
+                                                <a ng-click="selectDetailView(obj.toString(),arr,type.value,3)">
+                                                <div class="clsNextMatch">{{getNumberFormat(positionObj[curMatch+2][obj][arr][type.value])}}</div>
+                                                <div class="clsNextMatchHypen"> - 
+                                                </div>      
+                                                <div class="clsNextMatchPer">{{getPercentage((positionObj[curMatch + 2][obj][arr][type.value]),2)}}</div>
+                                                <div class="clsNextMatchArr">
+                                                <span ng-class="{'glyphicon glyphicon-arrow-up posArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],2) == '+'}"></span>
+                                                <span ng-class="{'glyphicon glyphicon-arrow-down negArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],2) == '-'}"></span>
+                                                </div>
+                                                 </a>
+                                                
+                                                <!--
+                                                <a style="    padding: 6px 8px 6px 8px;border: 0px solid blue;border-radius: 4px;">{{getNumberFormat(positionObj[curMatch+2][obj][arr][type.value])}}  - {{getPercentage((positionObj[curMatch + 2][obj][arr][type.value]),2)}}</a>
+                                                <span ng-class="{'glyphicon glyphicon-arrow-up posArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],2) == '+'}"></span>
+                                                <span ng-class="{'glyphicon glyphicon-arrow-down negArrow': showArrow(positionObj[curMatch][obj][arr][type.value],positionObj[curMatch + 1][obj][arr][type.value],positionObj[curMatch + 2][obj][arr][type.value],2) == '-'}"></span>
+                                                -->
+                                          </td>
+                                          <!--Uncomment for Draw
+                                          <td>
+                                                {{positionObj[curMatch+3][obj][arr][type.value]}}
+                                          </td>
+                                          -->
+                                    </tr>
+                                    <tr ng-repeat-end>
+                                    </tr>
+                                    <tr ng-repeat-end>
+                                    </tr>
+                              </tbody>
+                        </table>
+                  </div>
+            </div>
+
+            <div class="row" ng-if="detailedPos==-1">
+                  <div style="padding-top:10px"> <span ng-if="selectedPointOption == 'All'">* Run Rate<br></span><sup id="highlight1">1</sup> Total Current Possible Options - {{getNumberFormat(totalOptions)}} <br><sup id="highlight2">2</sup> Total Possible Option after next match - {{getNumberFormat(totalOptionsNext)}} </div>
+                  <div style="padding-top:2px" ng-if="innerWidth < 500">Cr - Crores<br>L - Lakhs<br>K - Thousands</div>
+            </div>      
+            <div class="row" ng-if="detailedPos!=-1 && !detailedViewSample">
+                  <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 0px;">
+                        <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">Points required for Team : <b>{{detailedTeam.toString().toUpperCase()}}</b> for position : <b>{{detailedPos}}</b> based on <b>{{(detailedType == 'rr' ? 'Run Rate' : 'Point')}}</b>. Remaining matches : <b>{{detailedRemaining}}</b></span>
+                        <span ng-click="hideDetailView()" class="glyphicon glyphicon-remove-circle clsHideDetailView" ></span>
+                        <table class="table table-striped">
+                              <thead>
+                                    <tr>
+                                          <th>
+                                                Total Points
+                                          </th>
+                                          <th>
+                                                Options
+                                          </th>
+
+                                    </tr>
+                              </thead>
+                              <tbody>
+                                    <tr ng-repeat="detPos in detPosAry">
+                                          <th>
+                                                {{detPos}}
+                                          </th>
+                                          <th style="text-align: right;padding-right:10px">
+                                                <a ng-click="selectDetailViewSample(detPos)">
+                                                      
+                                                {{getNumberFormat(currentMatchDetail[detailedTeam][detailedPos][detailedType][detPos].Count)}}
+                                                 - 
+                                                {{getPercentage(currentMatchDetail[detailedTeam][detailedPos][detailedType][detPos].Count,detailedLevel+1)}}
+      
+                                                      </a>
+                                          </th>
+                                    </tr>
+                              </tbody>
+                        </table>
+                  </div>
+            </div>
+
+
+            <div class="row" ng-if="detailedViewSample">
+                  <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 0px;">
+
+                  <a  style="display: inline-block;margin-top: 10px;margin-left: 10px;"" ng-click="selectDetailViewSample(detPosPoint,samplePosition-1)" ng-class="samplePosition > 1  ? '' : 'isDisabled'">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                              </a><span class="spanTeamNameHeader1">{{"Sample " + samplePosition + ' Of ' + sampleCount}}</span>
+                              <a ng-click="selectDetailViewSample(detPosPoint,samplePosition+1)" ng-class="samplePosition < sampleCount  ? '' : 'isDisabled'">
+          <span class="glyphicon glyphicon-chevron-right"></span></a>
+                        <span ng-click="hideDetailViewSample()" class="glyphicon glyphicon-remove-circle" style="float: right;padding-right: 10px;padding-top: 10px;color: red;"></span>
+                              
+
+
+                        <table class="table  table-striped">
+                              <thead>
+                                    <tr>
+                                          <th>
+                                                Match Details
+                                          </th>
+                                          <th>
+                                                Winner
+                                          </th>
+
+                                    </tr>
+                              </thead>
+                              <tbody>
+                                    <tr ng-repeat="next in upcomingMatches.slice(curMatchPos + detailedLevel) track by $index">
+                                          <th>
+                                                Match : {{next.SlNo + " -  " + next.date + " " + next.team1 + next.team2 }}
+                                          </th>
+                                          <th>
+                                                {{sampleMatch[$index].toString().toUpperCase()}} <span style="font-size: 12px;font-weight: 100;"> vs {{(next.team1.toString().toLowerCase() == sampleMatch[$index] ? next.team2 : next.team1)}}  </span>
+                                          </th>
+                                    </tr>
+                              </tbody>
+                        </table>
+
+&nbsp;&nbsp;Result: <br>
+<div ng-repeat="obj in teamsObjSampleAry" class="innerTeam">
+                        <span class="spanTeamNameHeader">{{obj}}</span>
+                        <div style="
+    display: inline-block;
+    border: 1px solid #337ab7;
+    border-radius: 5px;
+    padding: 0px 5px 0px 5px;
+    background: linear-gradient(110deg, #d9edf7 100%);
+    width: 30px;
+"><span class="ng-binding" style="
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+">{{teamsObjSample[obj].point + teamsObjSample[obj].won}}
+  </span></div>
+                  </div>
+
+
+
+                  </div>
+            </div>
+
+<br>
+<br>
+
+</body>
+<style>
+      .isDisabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+      }
+
+      .isDisabled>a {
+            color: currentColor;
+            display: inline-block;
+            /* For IE11/ MS Edge bug */
+            pointer-events: none;
+            text-decoration: none;
+      }
+
+      .posArrow {
+            color: green;
+      }
+
+      .negArrow {
+            color: red;
+      }
+
+      body .row {
+            margin-left: -10px;
+            margin-right: -10px;
+      }
+
+
+.clsSelectedPointOption {
+padding-left:10px;
+}
+
+.clsSelectedTeamDropDown {
+padding-left:10px;
+}
+
+.clsSelectedPos  {
+padding-left:10px;
+}
+
+
+
+      @media (min-width: 0px) and (max-width: 500px) {
+            .innerTeam {
+                  display: inline-block;
+                  padding: 2px;
+                  border: 1px solid #d7cdcd;
+                  border-radius: 5px;
+                  margin-left: 5px;
+            }
+
+            .spanTeamNameHeader {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #286090;
+                  padding-right: 5px;
+                  min-width: 40px;
+                  max-width: 40px;
+                  display: inline-block
+            }
+
+            .spanTeamNameHeaderPoints {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #286090;
+                  padding-right: 5px;
+                  min-width: 35px;
+                  max-width: 35px;
+                  display: inline-block
+            }
+
+            .clsHideDetailView {
+                  float: right;padding-right: 0px;padding-top: 10px;color: red;
+            }
+
+            .clsNextMatch {
+            width:100%;text-align:center;
+            }
+
+            .clsNextMatchHypen {
+            display: none;
+            }
+
+            .clsNextMatchPer {
+            display: inline-block;text-align:right;width: 70%;
+            }
+
+            .clsNextMatchArr {
+            display: inline-block;
+            }
+
+            .clsCurMatch {
+            width:100%;text-align:center;
+            }
+
+            .clsCurMatchPer
+            {
+            display: inline-block;text-align:center;width:100%;
+            }
+
+
+      }
+
+      @media (min-width: 501px) and  (max-width: 5000px) {
+            .innerTeam {
+                  display: inline-block;
+                  padding: 5px;
+                  border: 1px solid #d7cdcd;
+                  border-radius: 5px;
+                  margin: 5px;
+            }
+
+            .spanTeamNameHeader {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #286090;
+                  padding-right: 5px;
+                  min-width: 45px;
+                  display: inline-block
+            }
+
+            .spanTeamNameHeaderPoints {
+                  font-size: 14px;
+                  font-weight: 600;
+                  color: #286090;
+                  padding-right: 5px;
+                  min-width: 40px;
+                  max-width: 40px;
+                  display: inline-block
+            }
+
+
+                        
+            .clsSelectedPointOption {
+            padding-left:5px;
+            }
+
+            .clsSelectedTeamDropDown {
+            padding-left:5px;
+            }
+
+            .clsSelectedPos  {
+            padding-left:5px;
+            }
+
+
+            .clsHideDetailView {
+                  float: right;padding-right: 5px;padding-top: 10px;color: red;
+            }
+
+            
+            .clsNextMatch {
+            display: inline-block;width:68%;text-align:right;
+            }
+
+            .clsNextMatchHypen {
+            display: inline-block;width:5%;text-align:center
+            }
+
+            .clsNextMatchPer {
+            display: inline-block;width:18%;text-align:right;
+            }
+
+            .clsNextMatchArr {
+            display: inline-block;width:5%;
+            }
+
+
+            .clsCurMatch {
+            display: inline-block;width:70%;text-align:right;
+            }
+
+            .clsCurMatchPer
+            {
+            display: inline-block;width:20%;text-align:right
+            }
+
+      }
+
+      .spanTeamNameHeader1 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #286090;
+            padding-right: 5px;
+      }
+</style>
+
+</html>
