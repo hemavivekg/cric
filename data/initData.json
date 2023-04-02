@@ -13,7 +13,7 @@
 { "name": "LSG", "desc": "Lucknow Super Giants", "point": 8, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "DC", "desc": "Delhi Capitals", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "RCB", "desc": "Royal Challengers", "point":10, "won": 0, "lost": 0 ,"runrate":"-1.909","awon":0,"alost":0,"aplayed":0},
-{ "name": "KKR", "desc": "Kolkota Knight Riders", "point": 8, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
+{ "name": "KKR", "desc": "Kolkota Knight Riders", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "PBKS", "desc": "Punjab", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "SRH", "desc": "Sun Risers Hydrabad", "point": 8, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "CSK", "desc": "Chennai Super Kings", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
