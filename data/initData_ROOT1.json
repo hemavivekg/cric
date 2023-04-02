@@ -13,7 +13,7 @@
 { "name": "LSG", "desc": "Lucknow Super Giants", "point": 8, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "DC", "desc": "Delhi Capitals", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "RCB", "desc": "Royal Challengers", "point":10, "won": 0, "lost": 0 ,"runrate":"-1.909","awon":0,"alost":0,"aplayed":0},
-{ "name": "KKR", "desc": "Kolkota Knight Riders", "point": 8, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
+{ "name": "KKR", "desc": "Kolkota Knight Riders", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "PBKS", "desc": "Punjab", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "SRH", "desc": "Sun Risers Hydrabad", "point": 8, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
 { "name": "CSK", "desc": "Chennai Super Kings", "point": 6, "won": 0, "lost": 0 ,"runrate":"+1.909","awon":0,"alost":0,"aplayed":0},
@@ -29,21 +29,11 @@
 { "name": "SRH", "desc": "Sun Risers Hydrabad", "point": 12, "won": 0, "lost": 0 },
 { "name": "CSK", "desc": "Chennai Super Kings", "point": 10, "won": 0, "lost": 0 },
 { "name": "MI", "desc": "Mumbai", "point": 12, "won": 0, "lost": 0 }],
-"rootPos" : 3,
+"rootPos" : 1,
 "removeMatch1" : 29,
-"removeMatch" : 1,
-"nextLevelCounter":2,
-"commentssction" : "rootPos : 1, removeMatch1 : 29, removeMatch : 0, nextLevelCounter:3",
-"textFooter1": ["Test1","Test2","Test3","Test4"],
-"linkFooter1": [{"link":"Link1","text":"Text1"},
-{"link":"Link2","text":"Text2"},
-{"link":"Link3","text":"Text3"},{"link":"Link4","text":"Text4"}]
-,"linkFooter": [{"link":"Link1","text":"Text1"},
-{"link":"Link2","text":"Text2"},
-{"link":"","text":"Text3"},{"link":"","text":"Text4"}]
-,"textFooter": ["Test1","","Test3","Test4"]
-
-
+"removeMatch" : 0,
+"nextLevelCounter":3,
+"commentssction" : "rootPos : 1, removeMatch1 : 29, removeMatch : 0, nextLevelCounter:3"
 }
 
 
