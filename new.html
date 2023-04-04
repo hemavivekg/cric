@@ -20,6 +20,7 @@
 
                   $scope.totalOptions = 0;
                   $scope.innerWidth = $window.innerWidth;
+                  $scope.nextLevel = [];
 
 
                   function GetWinDataFromServer(pos) {
@@ -444,10 +445,10 @@
                   }
                   */
 
-                  $scope.positionList = ["All", "1", "1 - 2", "1 - 4", "2", "3", "3 - 4", "4", "5", "6", "7", "8", "9", "10", "Top 2", "Top 4"];
-                  $scope.selectedPos = "1";
+                  $scope.positionList = ["All", "1", "1 - 2", "2", "3", "3 - 4", "4", "5", "6", "7", "8", "9", "10", "Top 2", "Top 4"];
+                  $scope.selectedPos = "1 - 2";
 
-                  $scope.positionList2 = ["All", "1", "1 - 2", "1 - 4", "2", "3", "3 - 4", "4", "5", "6", "7", "8", "9", "10", "Top 2", "Top 4"];
+                  $scope.positionList2 = ["All", "1", "1 - 2", "2", "3", "3 - 4", "4", "5", "6", "7", "8", "9", "10", "Top 2", "Top 4"];
 
                   $scope.pointOptions = [{ name: 'Point', value: 'point' }, { name: 'Run Rate', value: 'rr' }];
 
@@ -554,9 +555,11 @@
                                     $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won + 2;
                                     //$scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].won = $scope.teams.filter(e => e.name == $scope.upcomingMatches[$scope.curMatchPos].team1)[0].won + 2;
                                     //$scope.upcomingMatches[$scope.curMatchPos]
+                                    $scope.nextLevel.push($scope.upcomingMatches[$scope.curMatchPos].team1.toUpperCase());
                               }
                               else if ($scope.selectedOption == 2) {
                                     $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team2].won + 2;
+                                    $scope.nextLevel.push($scope.upcomingMatches[$scope.curMatchPos].team2.toUpperCase());
                               }
                               else {
                                     $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won = $scope.teamsObj[$scope.upcomingMatches[$scope.curMatchPos].team1].won + 1;
@@ -629,7 +632,7 @@
                         if (objDetail[$scope.posAry[level - 1]]) {
                               $scope.currentMatchDetail = objDetail[$scope.posAry[level - 1]];
 
-                              refreshCurrentMatch(team, pos, type);
+                              refreshCurrentMatch(team, pos, type,level);
                         }
                         else {
                               $scope.loading = true;
@@ -640,7 +643,7 @@
                                           //alert('hi');
                                           objDetail[$scope.posAry[level - 1]] = JSON.parse(response.data[0].name);
                                           $scope.currentMatchDetail = JSON.parse(response.data[0].name);
-                                          refreshCurrentMatch(team, pos, type);
+                                          refreshCurrentMatch(team, pos, type,level);
                                     });
 
                         }
@@ -656,14 +659,27 @@
                         //console.log(detPosAry);
                   }
 
-                  function refreshCurrentMatch(team, pos, type) {
+                  function refreshCurrentMatch(team, pos, type,level) {
 
 
                         $scope.detailedTeam = team;
                         $scope.detailedPos = pos;
                         $scope.detailedType = type;
                         $scope.detailedPlayed = $scope.teamsObj[team.toUpperCase()].played;
+                        $scope.detailedPoint  = $scope.teamsObj[team.toUpperCase()].point;
+                        var winPoints = $scope.nextLevel.filter(e => e == team.toUpperCase()).length * 2;
                         var startFromMatch = parseInt($scope.upcomingMatches[0].SlNo) + parseInt($scope.curMatchPos) + parseInt($scope.detailedLevel);
+                        if (level > 1)
+                        {
+                              var startValue = parseInt($scope.curMatchPos);
+                              if (level == 2 && team.toUpperCase() == $scope.upcomingMatches[startValue].team1.toUpperCase())
+                                    winPoints = winPoints + 2;
+                              if (level == 3 && team.toUpperCase() == $scope.upcomingMatches[startValue].team2.toUpperCase())
+                                    winPoints = winPoints + 2;
+                        }
+
+                        $scope.detailedPoint = $scope.detailedPoint + winPoints;
+                        
                         //alert(startFromMatch);
                         $scope.detailedRemaining = $scope.upcomingMatches.filter(e => e.SlNo >= startFromMatch && (e.team1 == team.toUpperCase() || e.team2 == team.toUpperCase())).length;
                         $scope.detPosAry = [];
@@ -734,6 +750,8 @@
 
                         console.log($scope.teamsObjSample);
 
+                        $scope.detPosPoint = $scope.teamsObjSample[$scope.winTeam.toUpperCase()].point + $scope.teamsObjSample[$scope.winTeam.toUpperCase()].won;
+                        $scope.detailedTeam = $scope.winTeam.toUpperCase();
                         $scope.teamsObjSampleAry = Object.keys($scope.teamsObjSample);
                       
                         $scope.teamsObjSampleAry.sort((a, b) => ($scope.teamsObjSample[b].lost) - ($scope.teamsObjSample[a].lost));
@@ -745,6 +763,7 @@
 
                         console.log('$scope.teamsObjSampleAry');
                         console.log($scope.teamsObjSampleAry);
+
 
 
                   }
@@ -835,7 +854,7 @@
 <div  ng-class="loading ? 'loader' : ''"></div>
 <p class="text-primary" style="
     text-align: center;
-    padding-top: 20px;
+    padding-top: 0px;
     /* padding-bottom: 5px; */
     font-size: 21px;
     font-family: Calibri;
@@ -891,7 +910,7 @@
                   </div>
             </div>
             <br>
-            <div class="row" ng-if="teamsNewPoint" style="border-radius: 10px;border: 1px solid #337ab7;padding-top: 10px;padding-bottom: 10px;margin-bottom: 10px;">
+            <div ng-class="teamsNewPoint ? 'row displayPoints' : 'row'" style="border-radius: 10px;border: 1px solid #337ab7;opacity:0; transition: opacity 3s;height:0px;">
 
                   <span style="
     /* background-color: white; */
@@ -1058,7 +1077,7 @@
                               id="highlight1">1</sup> Total Current Possible Options - {{getNumberFormat(totalOptions)}}
                               <br><sup id="highlight2">2</sup> Total Possible Option after next match - {{getNumberFormat(totalOptionsNext)}}
                               <br>Top 1-2 : Covers the positions 1 & 2 based on point and run rate (* run rate only ranging
-                              between 1 - 2) <a ng-click="showTop2 = !showTop2">Example</a>
+                              between 1 - 2, not covering position beyond 2) <a ng-click="showTop2 = !showTop2">Example</a>
                               <div ng-if="showTop2">
                                     <div style="padding-top:10px">
                                           <b>Covered Scenarios:</b>
@@ -1229,7 +1248,7 @@
                               </div>
 
                               <br>Top 3-4 : Covers the positions 3 & 4 based on point and run rate (* run rate only ranging
-                              between 1 - 4, not covering position beyond 4) <a ng-click="showTop4 = !showTop4">Example</a>
+                              between 1 - 4 i.e 1-3,1-4,2-3,2-4,3-4. not covering position beyond 4) <a ng-click="showTop4 = !showTop4">Example</a>
 
 
 
@@ -1415,7 +1434,7 @@
                               <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">If Team : <b><select class="clsSelectedTeamDropDown" ng-model="winTeamCaps" ng-options="x for x in teamNames" ng-change="changeOptionTeamWin()">
                         </select></b> wins  
 <select ng-model="winNumber" ng-options="v for v in winRemainingAry" ng-change="changeWinNumber()"></select>                   
-                        of the remaining matches : <b>{{winRemaining }}</b></span>
+                        of the remaining matches : <b>{{winRemaining }}</b>.</span>
                               <span ng-click="showWin = false;" class="glyphicon glyphicon-remove-circle clsHideDetailView"></span>
                               <table class="table table-striped">
                                     <thead>
@@ -1456,13 +1475,16 @@
 
                   <div class="row" ng-if="detailedPos!=-1 && !detailedViewSample">
                         <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 0px;">
-                              <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">Points required for Team : <b>{{detailedTeam.toString().toUpperCase()}}</b> for position : <b>{{detailedPos}}</b> based on <b>{{(detailedType == 'rr' ? 'Run Rate' : 'Point')}}</b>. Remaining matches : <b>{{detailedRemaining}}</b></span>
+                              <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">Points required for Team : <b>{{detailedTeam.toString().toUpperCase()}}</b> for position : <b>{{detailedPos}}</b> based on <b>{{(detailedType == 'rr' ? 'Run Rate' : 'Point')}}</b>.[Current Points : <b>{{detailedPoint}}</b>] Remaining matches : <b>{{detailedRemaining}}</b></span>
                               <span ng-click="hideDetailView()" class="glyphicon glyphicon-remove-circle clsHideDetailView"></span>
                               <table class="table table-striped">
                                     <thead>
                                           <tr>
                                                 <th>
                                                       Total Points
+                                                </th>
+                                                <th>
+                                                      Requires
                                                 </th>
                                                 <th>
                                                       Options
@@ -1474,6 +1496,9 @@
                                           <tr ng-repeat="detPos in detPosAry">
                                                 <th>
                                                       {{detPos}}
+                                                </th>
+                                                <th>
+                                                      {{(detPos - detailedPoint)/2}} Win - {{detPos - detailedPoint}} Points
                                                 </th>
                                                 <th style="text-align: right;padding-right:10px">
                                                       <a ng-click="selectDetailViewSample(detPos)">
@@ -1529,8 +1554,8 @@
                               </table>
 
                               &nbsp;&nbsp;Result: <br>
-                              <div ng-repeat="obj in teamsObjSampleAry" class="innerTeam">
-                                    <span class="spanTeamNameHeader">{{obj}}</span>
+                              <div ng-repeat="obj in teamsObjSampleAry" class="innerTeam" ng-class="((teamsObjSample[obj].point + teamsObjSample[obj].won) == detPosPoint ? 'innerTeamActive' : '')" >
+                                    <span class="spanTeamNameHeader" ng-class="(detailedTeam.toUpperCase() == obj ? 'spanTeamNameHeaderActive' : '')" >{{obj}}</span>
                                     <div style="
     display: inline-block;
     border: 1px solid #337ab7;
@@ -1555,7 +1580,9 @@
                   <br>
 
 
-<div style="margin-left: -15px;margin-right: -15px;">Disclaimer: Above information provided is for illustration purpose only. IPLCalc.com is not responsible for any error in the above data presentated.
+<div style="margin-left: -15px;margin-right: -15px;">
+      Disclaimer: Thanks for visiting the site. Above information provided is for illustration purpose only.
+      IPLCalc.com is not responsible for any error in the above data presentated. Please provide your suggessions/issues/feedback to iplcalc@gmail.com.
     <span ng-if="textFooter[0]">{{textFooter[0]}}</span><a ng-if="linkFooter[0].link" href="{{linkFooter[0].link}}">{{linkFooter[0].text}}</a>
     <span ng-if="textFooter[1]">{{textFooter[1]}}</span><a ng-if="linkFooter[1].link" href="{{linkFooter[1].link}}">{{linkFooter[1].text}}</a>
     <span ng-if="textFooter[2]">{{textFooter[2]}}</span><a ng-if="linkFooter[2].link" href="{{linkFooter[2].link}}">{{linkFooter[2].text}}</a>
@@ -1567,7 +1594,7 @@
   <!-- Copyright -->
   <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);text-align:left;padding-left:10px">
     © 2023 Copyright
-    <a class="text-dark" style="text-align:right;float: right;padding-right: 10px;" href="mailto:iplcalc@gmail.com">Contact US @ iplcalc@gmail.com</a>
+    <a class="text-dark" style="text-align:right;float: right;padding-right: 10px;" href="mailto:iplcalc@gmail.com">Contact Us at iplcalc@gmail.com</a>
   </div>
   <!-- Copyright -->
 </footer>
@@ -1614,6 +1641,10 @@
       .clsSelectedPos {
             padding-left: 10px;
       }
+
+            .innerTeamActive {
+                  background-color: lavender;
+            }
 
 
 
@@ -1807,10 +1838,22 @@
             cursor:pointer;
       }
 
-.glyphicon-remove-circle {
+      .glyphicon-remove-circle {
 
             cursor:pointer;
       }
+
+      .displayPoints {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            opacity: 1!important;      
+            height: auto!important;
+            }
+
+      .spanTeamNameHeaderActive {
+            color:maroon;
+      }      
       
 </style>
 
