@@ -373,7 +373,7 @@
                         var cro100 = 1000000000;
                         var lakh1 = 100000;
                         var tenk = 10000;
-                        if ($scope.innerWidth < 600) {
+                        if ($scope.innerWidth < 650) {
 
                               var returnVal = '';
                               if (val > cro1) {
@@ -1012,7 +1012,7 @@
                                     <tr ng-repeat="type in pointOptions" ng-if="arr < 11 || type.name == 'Run Rate'">
                                           <td width="12%">
                                                 <!--{{obj.toString().toUpperCase()}} <span ng-if="innerWidth > 500">- </span>{{(arr < 11 ? arr : (arr == '11' : 'Top2' ? (arr == '12' : 'Top4': '')))}} {{(type.name == "Run Rate" && selectedPointOption == "All" ? "*" : "") }}-->
-                                                <a ng-click="selectWinDetails(obj.toString())">{{obj.toString().toUpperCase()}}</a>                                                <span ng-if="innerWidth > 500">- </span>{{(arr == '11' ? 'Top 1-2' : (arr
+                                                <a ng-click="selectWinDetails(obj.toString())">{{obj.toString().toUpperCase()}}</a>                                                <span ng-if="innerWidth > 650">- </span>{{(arr == '11' ? 'Top 1-2' : (arr
                                                 == '12' ? 'Top 3-4': arr))}} {{(type.name == "Run Rate" && selectedPointOption
                                                 == "All" && arr != '11' && arr != '12' ? "*" : "") }}
                                           </td>
@@ -1423,7 +1423,7 @@
 
 
 
-                              <div style="padding-top:2px" ng-if="innerWidth < 500">Cr - Crores<br>L - Lakhs<br>K - Thousands</div>
+                              <div style="padding-top:2px" ng-if="innerWidth < 650">Cr - Crores<br>L - Lakhs<br>K - Thousands</div>
                   </div>
                   </div>
                   
@@ -1475,7 +1475,7 @@
 
                   <div class="row" ng-if="detailedPos!=-1 && !detailedViewSample">
                         <div class="col-sm-12" style="border: 1px solid darkred;border-radius: 5px;padding: 0px;">
-                              <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">Points required for Team : <b>{{detailedTeam.toString().toUpperCase()}}</b> for position : <b>{{detailedPos}}</b> based on <b>{{(detailedType == 'rr' ? 'Run Rate' : 'Point')}}</b>.[Current Points : <b>{{detailedPoint}}</b>] Remaining matches : <b>{{detailedRemaining}}</b></span>
+                              <span style="padding: 10px 0px 0px 10px;display: inline-block;width: 95%;">Points required for Team : <b>{{detailedTeam.toString().toUpperCase()}}</b> for position : <b>{{(detailedPos == '11' ? 'Top 1-2' : (detailedPos == '12' ? 'Top 3-4': detailedPos))}}</b> based on <b>{{(detailedPos == '11' || detailedPos == '12' ? 'Point / ' : '' )}} {{(detailedType == 'rr' ? 'Run Rate' : 'Point')}}</b>.[Current Points : <b>{{ detailedPoint }}</b>] Remaining matches : <b>{{detailedRemaining}}</b></span>
                               <span ng-click="hideDetailView()" class="glyphicon glyphicon-remove-circle clsHideDetailView"></span>
                               <table class="table table-striped">
                                     <thead>
@@ -1648,7 +1648,7 @@
 
 
 
-      @media (min-width: 0px) and (max-width: 500px) {
+      @media (min-width: 0px) and (max-width: 650px) {
             .innerTeam {
                   display: inline-block;
                   padding: 2px;
@@ -1715,7 +1715,7 @@
             }
       }
 
-      @media (min-width: 501px) and (max-width: 5000px) {
+      @media (min-width: 650px) and (max-width: 5000px) {
             .innerTeam {
                   display: inline-block;
                   padding: 5px;
@@ -1768,7 +1768,7 @@
 
             .clsNextMatch {
                   display: inline-block;
-                  width: 68%;
+                  width: 58%;
                   text-align: right;
             }
 
@@ -1780,7 +1780,7 @@
 
             .clsNextMatchPer {
                   display: inline-block;
-                  width: 18%;
+                  width: 25%;
                   text-align: right;
             }
 
