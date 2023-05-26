@@ -1,0 +1,370 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      //$('.data').hide();
+      var maxElement = 0;
+      var secC = 0;
+      var secCMax = 0;
+      var dSec;
+      var dAry;
+      //var pos = [{"l0": {"val":100}}, {"l1": {"val":200}}, {"l2": {"val":300}}, {"l3": {"val":400}}];
+      var pos = [{ "key": "l0", "val": 400 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }];
+
+
+
+      var actval = [{ "key": "l0", "val": 400,"point":10,"display":"CSK" }, 
+                    { "key": "l1", "val": 200,"point":12,"display":"DC" }, 
+                    { "key": "l2", "val": 300,"point":14,"display":"GT" }, 
+                    { "key": "l3", "val": 100,"point":13,"display":"RR" }];
+
+
+      var coredat =    [[	{ 'key': 'l0', 'val': 0.1,'point':0,'display':'CSK' }, 	{ 'key': 'l1', 'val': -2.1,'point':-2,'display':'DC' }, 	{ 'key': 'l2', 'val': 2.1,'point':2,'display':'GT' }, 	{ 'key': 'l3', 'val': -1.9,'point':-2,'display':'KKR' }, 	{ 'key': 'l4', 'val': -2.1,'point':-2,'display':'LSG' }, 	{ 'key': 'l5', 'val': -1.9,'point':-2,'display':'MI' }, 	{ 'key': 'l6', 'val': -1.9,'point':-2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': -1.9,'point':-2,'display':'RCB' }, 	{ 'key': 'l8', 'val': -1.9,'point':-2,'display':'RR' }, 	{ 'key': 'l9', 'val': -1.9,'point':-2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 0.1,'point':0,'display':'CSK' }, 	{ 'key': 'l1', 'val': -2.1,'point':-2,'display':'DC' }, 	{ 'key': 'l2', 'val': 2.1,'point':2,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': -2.1,'point':-2,'display':'LSG' }, 	{ 'key': 'l5', 'val': -1.9,'point':-2,'display':'MI' }, 	{ 'key': 'l6', 'val': 2.1,'point':2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': -1.9,'point':-2,'display':'RCB' }, 	{ 'key': 'l8', 'val': -1.9,'point':-2,'display':'RR' }, 	{ 'key': 'l9', 'val': -1.9,'point':-2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 0.1,'point':0,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 2.1,'point':2,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': -1.9,'point':-2,'display':'MI' }, 	{ 'key': 'l6', 'val': 2.1,'point':2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': -1.9,'point':-2,'display':'RCB' }, 	{ 'key': 'l8', 'val': -1.9,'point':-2,'display':'RR' }, 	{ 'key': 'l9', 'val': -1.9,'point':-2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 0.1,'point':0,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 2.1,'point':2,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': -1.9,'point':-2,'display':'MI' }, 	{ 'key': 'l6', 'val': 2.1,'point':2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': -1.9,'point':-2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 0.1,'point':0,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 2.1,'point':2,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 2.1,'point':2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 2.1,'point':2,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 2.1,'point':2,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 2.1,'point':2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 2.1,'point':2,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 2.1,'point':2,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 2.1,'point':2,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 0.1,'point':0,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 2.1,'point':2,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 2.1,'point':2,'display':'KKR' }, 	{ 'key': 'l4', 'val': 1.9,'point':2,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 2.1,'point':2,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 2.1,'point':2,'display':'KKR' }, 	{ 'key': 'l4', 'val': 3.9,'point':4,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 2.1,'point':2,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 2.1,'point':2,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 2.1,'point':2,'display':'KKR' }, 	{ 'key': 'l4', 'val': 3.9,'point':4,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 4.1,'point':4,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 2.1,'point':2,'display':'KKR' }, 	{ 'key': 'l4', 'val': 3.9,'point':4,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 4.1,'point':4,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 3.9,'point':4,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 4.1,'point':4,'display':'RR' }, 	{ 'key': 'l9', 'val': 0.1,'point':0,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 3.9,'point':4,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 4.1,'point':4,'display':'RR' }, 	{ 'key': 'l9', 'val': 2.1,'point':2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 0.1,'point':0,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 4.1,'point':4,'display':'RR' }, 	{ 'key': 'l9', 'val': 2.1,'point':2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 2.1,'point':2,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 4.1,'point':4,'display':'RR' }, 	{ 'key': 'l9', 'val': 2.1,'point':2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 4.1,'point':4,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 2.1,'point':2,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 6.1,'point':6,'display':'RR' }, 	{ 'key': 'l9', 'val': 2.1,'point':2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 2.1,'point':2,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 6.1,'point':6,'display':'RR' }, 	{ 'key': 'l9', 'val': 2.1,'point':2,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 2.1,'point':2,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 2.1,'point':2,'display':'RCB' }, 	{ 'key': 'l8', 'val': 6.1,'point':6,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 2.1,'point':2,'display':'MI' }, 	{ 'key': 'l6', 'val': 4.1,'point':4,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 6.1,'point':6,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 2.1,'point':2,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 6.1,'point':6,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 4.1,'point':4,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 6.1,'point':6,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 4.1,'point':4,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 4.1,'point':4,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 6.1,'point':6,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 4.1,'point':4,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 6.1,'point':6,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 5.9,'point':6,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 6.1,'point':6,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 4.1,'point':4,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 6.1,'point':6,'display':'CSK' }, 	{ 'key': 'l1', 'val': -0.1,'point':0,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 6.1,'point':6,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 6.1,'point':6,'display':'CSK' }, 	{ 'key': 'l1', 'val': 1.9,'point':2,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 6.1,'point':6,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 8.1,'point':8,'display':'CSK' }, 	{ 'key': 'l1', 'val': 1.9,'point':2,'display':'DC' }, 	{ 'key': 'l2', 'val': 6.1,'point':6,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 6.1,'point':6,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 8.1,'point':8,'display':'CSK' }, 	{ 'key': 'l1', 'val': 1.9,'point':2,'display':'DC' }, 	{ 'key': 'l2', 'val': 8.1,'point':8,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 6.1,'point':6,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 6.1,'point':6,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 8.1,'point':8,'display':'CSK' }, 	{ 'key': 'l1', 'val': 1.9,'point':2,'display':'DC' }, 	{ 'key': 'l2', 'val': 8.1,'point':8,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 6.1,'point':6,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 8.1,'point':8,'display':'CSK' }, 	{ 'key': 'l1', 'val': 1.9,'point':2,'display':'DC' }, 	{ 'key': 'l2', 'val': 8.1,'point':8,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 1.9,'point':2,'display':'DC' }, 	{ 'key': 'l2', 'val': 8.1,'point':8,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 8.1,'point':8,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 10.1,'point':10,'display':'GT' }, 	{ 'key': 'l3', 'val': 4.1,'point':4,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 10.1,'point':10,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 8.1,'point':8,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 10.1,'point':10,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 7.9,'point':8,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 10.1,'point':10,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 4.1,'point':4,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 8.1,'point':8,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 6.1,'point':6,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 8.1,'point':8,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 8.1,'point':8,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 3.9,'point':4,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 8.1,'point':8,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 10.1,'point':10,'display':'CSK' }, 	{ 'key': 'l1', 'val': 5.9,'point':6,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 9.9,'point':10,'display':'LSG' }, 	{ 'key': 'l5', 'val': 8.1,'point':8,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 11.1,'point':11,'display':'CSK' }, 	{ 'key': 'l1', 'val': 5.9,'point':6,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 8.1,'point':8,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 11.1,'point':11,'display':'CSK' }, 	{ 'key': 'l1', 'val': 5.9,'point':6,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 6.1,'point':6,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 11.1,'point':11,'display':'CSK' }, 	{ 'key': 'l1', 'val': 5.9,'point':6,'display':'DC' }, 	{ 'key': 'l2', 'val': 12.1,'point':12,'display':'GT' }, 	{ 'key': 'l3', 'val': 8.1,'point':8,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 11.1,'point':11,'display':'CSK' }, 	{ 'key': 'l1', 'val': 5.9,'point':6,'display':'DC' }, 	{ 'key': 'l2', 'val': 14.1,'point':14,'display':'GT' }, 	{ 'key': 'l3', 'val': 8.1,'point':8,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 13.1,'point':13,'display':'CSK' }, 	{ 'key': 'l1', 'val': 5.9,'point':6,'display':'DC' }, 	{ 'key': 'l2', 'val': 14.1,'point':14,'display':'GT' }, 	{ 'key': 'l3', 'val': 8.1,'point':8,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 13.1,'point':13,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 14.1,'point':14,'display':'GT' }, 	{ 'key': 'l3', 'val': 8.1,'point':8,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 13.1,'point':13,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 8.1,'point':8,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 6.1,'point':6,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 13.1,'point':13,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 8.1,'point':8,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 13.1,'point':13,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 10.1,'point':10,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 13.1,'point':13,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 12.1,'point':12,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 12.1,'point':12,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 10.1,'point':10,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 12.1,'point':12,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 10.9,'point':11,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 12.9,'point':13,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 10.1,'point':10,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 12.9,'point':13,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 10.1,'point':10,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 10.1,'point':10,'display':'KKR' }, 	{ 'key': 'l4', 'val': 12.9,'point':13,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 12.1,'point':12,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 16.1,'point':16,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 12.9,'point':13,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 12.1,'point':12,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 12.9,'point':13,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 12.1,'point':12,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 7.9,'point':8,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 14.9,'point':15,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 12.1,'point':12,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 14.9,'point':15,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 12.1,'point':12,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 14.9,'point':15,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 14.1,'point':14,'display':'RCB' }, 	{ 'key': 'l8', 'val': 12.1,'point':12,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 15.1,'point':15,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 14.9,'point':15,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 14.1,'point':14,'display':'RCB' }, 	{ 'key': 'l8', 'val': 14.2,'point':14,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 17.1,'point':17,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 14.9,'point':15,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 14.1,'point':14,'display':'RCB' }, 	{ 'key': 'l8', 'val': 14.2,'point':14,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 17.1,'point':17,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 16.9,'point':17,'display':'LSG' }, 	{ 'key': 'l5', 'val': 14.1,'point':14,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 14.1,'point':14,'display':'RCB' }, 	{ 'key': 'l8', 'val': 14.2,'point':14,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 17.1,'point':17,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 18.1,'point':18,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 16.9,'point':17,'display':'LSG' }, 	{ 'key': 'l5', 'val': 16.1,'point':16,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 14.1,'point':14,'display':'RCB' }, 	{ 'key': 'l8', 'val': 14.2,'point':14,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	],
+[	{ 'key': 'l0', 'val': 17.1,'point':17,'display':'CSK' }, 	{ 'key': 'l1', 'val': 9.9,'point':10,'display':'DC' }, 	{ 'key': 'l2', 'val': 20.1,'point':20,'display':'GT' }, 	{ 'key': 'l3', 'val': 12.1,'point':12,'display':'KKR' }, 	{ 'key': 'l4', 'val': 16.9,'point':17,'display':'LSG' }, 	{ 'key': 'l5', 'val': 16.1,'point':16,'display':'MI' }, 	{ 'key': 'l6', 'val': 12.1,'point':12,'display':'PBKS' }, 	{ 'key': 'l7', 'val': 14.1,'point':14,'display':'RCB' }, 	{ 'key': 'l8', 'val': 14.2,'point':14,'display':'RR' }, 	{ 'key': 'l9', 'val': 8.1,'point':8,'display':'SRH' }, 	]]
+;
+
+      var coredat22 = [[{ "key": "l0", "val": 400,"point":10,"display":"CSK" }, 
+                    { "key": "l1", "val": 200,"point":12,"display":"DC" }, 
+                    { "key": "l2", "val": 300,"point":14,"display":"GT" }, 
+                    { "key": "l3", "val": 100,"point":13,"display":"RR" }],
+                    [{ "key": "l0", "val": 100,"point":10,"display":"CSK" }, 
+                    { "key": "l1", "val": 200,"point":12,"display":"DC" }, 
+                    { "key": "l2", "val": 300,"point":14,"display":"GT" }, 
+                    { "key": "l3", "val": 100,"point":13,"display":"RR" }],
+                    [{ "key": "l0", "val": 300,"point":11,"display":"CSK" }, 
+                    { "key": "l1", "val": 200,"point":12,"display":"DC" }, 
+                    { "key": "l2", "val": 300,"point":14,"display":"GT" }, 
+                    { "key": "l3", "val": 100,"point":13,"display":"RR" }],
+                    [{ "key": "l0", "val": 10,"point":14,"display":"CSK" }, 
+                    { "key": "l1", "val": 200,"point":12,"display":"DC" }, 
+                    { "key": "l2", "val": 300,"point":14,"display":"GT" }, 
+                    { "key": "l3", "val": 100,"point":13,"display":"RR" }]];
+
+
+      var coredat1 = [
+        [{ "key": "l0", "val": 400 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 300 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 200 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 100 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 300 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 800 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 900 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 500 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 900 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 100 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 0 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 200 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 400 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 300 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 100 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 400 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 400 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 200 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 110 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }],
+        [{ "key": "l0", "val": 400 }, { "key": "l1", "val": 200 }, { "key": "l2", "val": 300 }, { "key": "l3", "val": 100 }]];
+
+      var startCounter = 0;
+      var totLength = coredat.length;
+      var timerval = 700;
+
+      $("#root").click(function () {
+      process();
+
+      });
+
+      function process() {
+
+        actval = coredat[startCounter];
+
+        $('#h').text('Match ' + (startCounter + 1) + ' of 70');
+
+
+        actval.sort((a, b) => b.val - a.val);
+        console.log('actval');
+        console.log(actval);
+        pos = [];
+        for (var i = 0; i < actval.length; i++) {
+          pos.push({ "key": actval[i].key, "val": 100 + (i * 50),"text":actval[i].display + " - " + actval[i].point ,"point": actval[i].point} );
+        }
+
+
+        for (var i = 0; i < pos.length; i++) {
+          console.log('settting value ' + pos[i].key);
+          $('#' + pos[i].key).css('top', pos[i].val + 'px');
+          $('#l' + pos[i].key).css('top', pos[i].val + 'px');
+          $('#' + pos[i].key).text(' .');
+          if (pos[i].point < 0)
+          {
+            $('#' + pos[i].key).css('width', '0px');
+            $('#l' + pos[i].key).text(pos[i].text.split('-')[0] + ' - NA');
+          }
+          else  
+  {
+            $('#' + pos[i].key).css('width', (0 + (pos[i].point * 14)) + 'px');
+         $('#l' + pos[i].key).text(pos[i].text);
+  } 
+        }
+        //$('#l1').css('top','300px');
+
+        if (startCounter < totLength - 1) {
+          startCounter++;
+         window.setTimeout(process, timerval);
+        }
+        else
+          return;
+      }
+
+      $("#root1").click(function () {
+
+
+        $('.data').hide();
+        var s = $("#data").val();
+        dSec = s.split('@');
+        dAry = dSec[0].split('|');
+        secC = 0;
+        secCMax = dSec.length;
+        //$('#h1').val(dAry[i]);
+        maxElement = dAry.length;
+        for (var i = 0; i < dAry.length; i++) {
+          $('#l' + i).text(dAry[i]);
+        }
+
+        showOneByOne(0);
+
+
+
+      });
+
+      function showOneByOne(val) {
+        if (val >= maxElement) {
+          if (secC == secCMax - 1) {
+            return;
+          }
+          else {
+            setTimeout(function () {
+              $('.data').hide();
+              secC = secC + 1;
+              dAry = dSec[secC].split('|');
+              maxElement = dAry.length;
+              for (var i = 0; i < dAry.length; i++) {
+                $('#l' + i).text(dAry[i]);
+              }
+
+              showOneByOne(0);
+            }, 4000);
+
+            return;
+
+          }
+        }
+        console.log('hi');
+        $('#l' + val).fadeIn(3000, function () { showOneByOne(val + 1) });
+        //$('#l' + val).show();
+      }
+
+    });
+
+  </script>
+  <style>
+    .data {
+      border-radius:5px;
+      width: 10px;
+      height:33px;
+      text-align: left;
+      padding-bottom: 0px;
+      padding-left: 0px;
+      font-family: calibri;
+      position: absolute;
+      transition: top 0.5s ease, width 0.5s ease;
+      background-color: black;
+      left:90px;
+    }
+
+    .data2 {
+      width: 100px;
+      text-align: left;
+      padding-bottom: 0px;
+      padding-left: 10px;
+      padding-top: 10px;
+      font-family: calibri;
+      position: absolute;
+      left:0px;
+      transition: top 0.5s ease, width 0.5s ease;
+      
+    }
+
+
+
+    #l0 {
+      top: 100px;
+      background-color: red;
+    }
+
+    #l1 {
+      top: 200px;
+      background-color: yellow;
+    }
+
+    #l2 {
+      top: 300px;
+      background-color: orange;
+    }
+
+    #l3 {
+      top: 400px;
+      background-color: blue;
+    }
+
+    #l4 {
+      top: 500px;
+      background-color: navajowhite;
+    }
+    #l5 {
+      top: 600px;
+      background-color: grey;
+    }
+    #l6 {
+      top: 700px;
+      background-color: brown;
+    }
+    #l7 {
+      top: 800px;
+      background-color: blue;
+    }
+    #l8 {
+      top: 900px;
+      background-color: violet;
+    }
+    #l9 {
+      top: 400px;
+      background-color: white;
+    }
+
+    .header {
+      font-size: 55px;
+      font-weight: 800;
+      text-align: center!important;
+      padding-bottom: 30px;
+    }
+
+    .item {
+      font-size: 2px;
+      font-weight: normal;
+    }
+  </style>
+
+</head>
+
+<body style="
+    background-color: mintcream;
+">
+  <div id="root" style="height:1800px;padding-top:40px;padding-left: 50px;padding-right: 50px;">
+<div id="h" style="
+    margin-top: 5px;
+    margin-left: 50;
+    font-size: x-large;margin-bottom:20px;
+">Match 1 of 70</div>  <div style="height:1800px;padding-top:40px;padding-left: 50px;padding-right: 50px;">
+    <div id="ll0" class="data2" ></div><div class="data item" id="l0" style=""></div>
+    <div id="ll1" class="data2" ></div><div class="data item" id="l1" style=""></div>
+    <div id="ll2" class="data2" ></div><div class="data item" id="l2" style=""> </div>
+    <div id="ll3" class="data2" ></div><div class="data item" id="l3" style=""> </div>
+    <div id="ll4" class="data2" ></div><div class="data item" id="l4" style=""> </div>
+    <div id="ll5" class="data2" ></div><div class="data item" id="l5" style=""> </div>
+    <div id="ll6" class="data2" ></div><div class="data item" id="l6" style=""> </div>
+    <div id="ll7" class="data2" ></div><div class="data item" id="l7" style=""> </div>
+    <div id="ll8" class="data2" ></div><div class="data item" id="l8" style=""> </div>
+    <div id="ll9" class="data2" ></div><div class="data item" id="l9" style=""> </div>
+</div>
+    <!--
+    <div class="data item" id="l0" style=""><div id="vll0" style="position:absolute"></div><div id="ll0" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l1" style=""><div id="ll1" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l2" style=""><div id="ll2" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l3" style=""><div id="ll3" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l4" style=""><div id="ll4" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l5" style=""><div id="ll5" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l6" style=""><div id="ll6" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l7" style=""><div id="ll7" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l8" style=""><div id="ll8" style="position:absolute">Test </div> </div>
+    <div class="data item" id="l9" style=""><div id="ll9" style="position:absolute">Test </div> </div>
+    -->
+  </div>
+  <h2>This is a heading</h2>
+  <input id="data" type="text" style="height:100px;width:250px" value="Day 30 (After match 40 Of 74)|4 Teams (DC,SRH,KKR,PBKS) have slim chance not to qualify for PlayOffs even if they win all their remaining matches|GT has slim chance to qualify PlayOff without wining any remaining games|All teams have probabilities to get any position i.e GT to last position, DC to first position)">
+
+  <button>Play</button>
+
+
+
+</body>
+
+</html>
