@@ -11,7 +11,21 @@
     $(document).ready(function () {
 
       var currentNumber = Math.ceil(Math.random() * 5);
-      resetData(currentNumber);
+      var iCount = 0;  
+      var iCurVal = 0;
+      for (var i = 0; i < 5; i++) {
+          //alert('d');
+          $('#maindiv').append("<div id='s' class='numberclass' ></div>");
+          //$('#maindiv').add('<div id="3" class="numberclass" ></div>');
+      }
+
+      $('.numberclass').each((i,e) => { $(e).css('background-color','white') });
+
+      var iRandomNo = Math.ceil(Math.random() * 5);
+
+      $('#result1').text(iRandomNo);
+
+      //resetData(currentNumber);
 
 
       function resetData(iCounter) {
@@ -47,6 +61,45 @@
       }
 
       $(".resultclass").click(function () {
+          if ($(this).text() == iCurVal)
+          {
+            $('.numberclass').each((i,e) => { $(e).css('background-color','white') });
+            var iTemp = Math.ceil(Math.random() * 5);
+
+            while (iTemp == iRandomNo) {
+              iTemp = Math.ceil(Math.random() * 5);
+            }
+            iRandomNo = iTemp;
+
+
+            iCurVal = 0;
+            $(this).fadeOut(750,function() {
+              $('#result1').text(iRandomNo);
+              $(this).css('background-color', 'white'); 
+              $(this).fadeIn(500);
+            });  
+          }
+          else
+          {
+            $(this).css('background-color', '#f98f8f');   
+          }
+      });
+
+      $(".numberclass").click(function () {
+        console.log($(this).css('background-color'));
+        if ($(this).css('background-color') == "rgb(255, 255, 255)")
+        {
+          $(this).css('background-color','darkred');
+          iCurVal = iCurVal + 1;
+        }
+        else
+        {
+          $(this).css('background-color','white');
+          iCurVal = iCurVal - 1;
+        }
+      });
+
+      $(".resultclass1").click(function () {
 
         $(this).blur();
         if ($(this).text() != currentNumber) {
@@ -144,14 +197,13 @@
     .resultclass:focus {
       outline: none;
       cursor: pointer;
-      background-color: red;
     }
 
     .resultalignment {
       margin-right: 200px;
     }
 
-    @media only screen and (max-width: 800px) {
+    @media only screen and (max-width: 900px) {
       .firstcol {
       display: inline-block;
       width: 98%;
@@ -195,9 +247,8 @@ margin: -2px;
           </div>
           <br>
           <div id="maindiv1" class='firstcol' style="text-align: center;">
-            <button id="result1" readonly class="resultclass resultalignment"
-              ></button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="result2"
-              class="resultclass" readonly></button>
+            <button id="result1" readonly class="resultclass"
+              ></button>
           </div>
         </div>
       </div>
