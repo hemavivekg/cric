@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      var currentNumber = Math.ceil(Math.random() * 5);
+      var iCount = 0;  
+      var iCurVal = 0;
+      for (var i = 0; i < 5; i++) {
+          //alert('d');
+          $('#maindiv').append("<div id='s' class='numberclass' ></div>");
+          //$('#maindiv').add('<div id="3" class="numberclass" ></div>');
+      }
+
+      $('.numberclass').each((i,e) => { $(e).css('background-color','white') });
+
+      var iRandomNo = Math.ceil(Math.random() * 5);
+
+      $('#result1').text(iRandomNo);
+
+      //resetData(currentNumber);
+
+
+      function resetData(iCounter) {
+        //var iCounter = 4;
+        $('.resultclass').css('background-color', 'white');
+        $('#maindiv').html('');
+
+        for (var i = 0; i < iCounter; i++) {
+          //alert('d');
+          $('#maindiv').append("<div id='s' class='numberclass' ></div>");
+          //$('#maindiv').add('<div id="3" class="numberclass" ></div>');
+        }
+
+        var iResult = Math.ceil(Math.random() * 2);
+        var result = "result" + iResult.toString();
+
+        $('#' + result).text(iCounter);
+
+        var iRandomNo = Math.ceil(Math.random() * 5);
+
+        while (iRandomNo == iCounter) {
+          iRandomNo = Math.ceil(Math.random() * 5);
+        }
+
+
+        if (iResult == 1) {
+          $('#result2').text(iRandomNo);
+        }
+        else
+          $('#result1').text(iRandomNo);
+
+        $("#maindiv").show(1000);
+      }
+
+      $(".resultclass").click(function () {
+          if ($(this).text() == iCurVal)
+          {
+            $('.numberclass').each((i,e) => { $(e).css('background-color','white') });
+            var iTemp = Math.ceil(Math.random() * 5);
+
+            while (iTemp == iRandomNo) {
+              iTemp = Math.ceil(Math.random() * 5);
+            }
+            iRandomNo = iTemp;
+
+
+            iCurVal = 0;
+            $(this).fadeOut(750,function() {
+              $('#result1').text(iRandomNo);
+              $(this).css('background-color', 'white'); 
+              $(this).fadeIn(500);
+            });  
+          }
+          else
+          {
+            $(this).css('background-color', '#f98f8f');   
+          }
+      });
+
+      $(".numberclass").click(function () {
+        console.log($(this).css('background-color'));
+        if ($(this).css('background-color') == "rgb(255, 255, 255)")
+        {
+          $(this).css('background-color','darkred');
+          iCurVal = iCurVal + 1;
+        }
+        else
+        {
+          $(this).css('background-color','white');
+          iCurVal = iCurVal - 1;
+        }
+      });
+
+      $(".resultclass1").click(function () {
+
+        $(this).blur();
+        if ($(this).text() != currentNumber) {
+          $(this).css('background-color', '#f98f8f');
+          return;
+        }
+
+
+        var iNew = Math.ceil(Math.random() * 5);
+
+        while (currentNumber == iNew) {
+          iNew = Math.ceil(Math.random() * 5);
+        }
+
+        currentNumber = iNew;
+        $('#maindiv').hide(1000, function () { resetData(currentNumber); })
+
+      });
+
+
+
+    });
+  </script>
+
+  <style>
+    .boxstyle {
+      padding: 0px;
+    }
+
+    .innerbox {
+      border: 1px solid navy;
+      border-radius: 5px;
+      margin: 3px;
+      padding: 7px;
+      box-sizing: border-box;
+    }
+
+    .firstcol {
+      display: inline-block;
+      width: 98%;
+      vertical-align: top;
+      min-height: 350px;
+      text-align: center;padding-top:60px
+    }
+
+    .secondcol {
+      display: inline-block;
+      vertical-align: top;
+      font-size: 13px;
+      color: darkgreen;
+      width: 53%;
+    }
+
+    .prodname {
+
+      font-size: 16px;
+      font-weight: 600;
+      font-style: oblique;
+      padding-bottom: 5px;
+      color: chocolate;
+
+    }
+
+
+    .resultclass {
+      cursor: pointer;
+      width: 250px;
+      height: 250px;
+      display: inline-block;
+      text-align: center;
+
+      border: 1px solid blue;
+      /* padding: 10%; */
+      padding: 50px;
+
+      font-size: 100px;
+    }
+
+    .resultclass:hover {
+      background-color: aliceblue;
+    }
+
+    .numberclass {
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      border: 1px solid red;
+      /* text-align: center; */
+      display: inline-block;
+      background-color: darkred;
+      margin: 20px;
+    }
+
+
+    .resultclass:focus {
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resultalignment {
+      margin-right: 200px;
+    }
+
+    @media only screen and (max-width: 900px) {
+      .firstcol {
+      display: inline-block;
+      width: 98%;
+      vertical-align: top;
+      min-height: 200px;
+      text-align: center;
+      padding-top:0px
+    }
+
+    
+    .resultalignment {
+      margin-right: 20px;
+    }
+
+
+}
+
+  </style>
+
+</head>
+
+<body>
+
+
+
+  <div class="container-fluid">
+
+
+
+    <div class="prodname" style="
+text-align: center;
+font-size: 18px;
+"></div>
+
+    <div class="row" style="
+margin: -2px;
+">
+      <div class='col-sm-12 boxstyle'>
+        <div class='innerbox'>
+          <div id="maindiv" class='firstcol'>
+          </div>
+          <br>
+          <div id="maindiv1" class='firstcol' style="text-align: center;">
+            <button id="result1" readonly class="resultclass"
+              ></button>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+</body>
+
+</html>
